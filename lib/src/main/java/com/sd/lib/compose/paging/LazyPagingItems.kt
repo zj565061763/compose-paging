@@ -26,10 +26,10 @@ fun LazyPagingItems<*>.fIsEmpty(): Boolean {
 }
 
 /**
- * UI状态
+ * 数据为空时，[CombinedLoadStates.refresh]状态
  */
 @Composable
-inline fun LazyPagingItems<*>.FUIState(
+inline fun LazyPagingItems<*>.FUIStateRefresh(
     /** 加载中 */
     stateLoading: @Composable () -> Unit = {},
     /** 加载错误 */

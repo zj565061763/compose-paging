@@ -20,7 +20,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.sd.demo.compose.paging.source.EmptyUserPagingSource
 import com.sd.demo.compose.paging.theme.AppTheme
 import com.sd.lib.compose.paging.FPagingLazyColumn
-import com.sd.lib.compose.paging.FUIState
+import com.sd.lib.compose.paging.FUIStateRefresh
 import kotlinx.coroutines.flow.Flow
 
 class SampleUIStateNoData : ComponentActivity() {
@@ -56,7 +56,7 @@ private fun Content(
 
         }
 
-        items.FUIState(
+        items.FUIStateRefresh(
             stateLoading = {
                 CircularProgressIndicator()
             },
