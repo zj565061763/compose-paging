@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lib_compose_paging_state_append_load_failure">加载失败，点击重试</string>
+    <string name="lib_compose_paging_state_append_no_more_data">没有更多数据了</string>
+
+    <string name="lib_compose_paging_state_prepend_load_failure">加载失败，点击重试</string>
+</resources>
