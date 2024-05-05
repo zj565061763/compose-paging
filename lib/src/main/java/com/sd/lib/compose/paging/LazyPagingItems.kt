@@ -66,11 +66,14 @@ inline fun LazyPagingItems<*>.FUIStateAppend(
     stateNoMoreData: @Composable () -> Unit = {},
 ) {
     if (!fIsEmpty()) {
-        val loadState = loadState.append
-        when {
-            loadState is LoadState.Loading -> stateLoading()
-            loadState is LoadState.Error -> stateError(loadState.error)
-            loadState.endOfPaginationReached -> stateNoMoreData()
+        when (val loadState = loadState.append) {
+            is LoadState.Loading -> stateLoading()
+            is LoadState.Error -> stateError(loadState.error)
+            is LoadState.NotLoading -> {
+                if (loadState.endOfPaginationReached) {
+                    stateNoMoreData()
+                }
+            }
         }
     }
 }
