@@ -54,7 +54,7 @@ fun LazyPagingItems<*>.fShowUIStateAppend(): Boolean {
 }
 
 /**
- * 数据不为空时，[CombinedLoadStates.append]状态
+ * [CombinedLoadStates.append]状态
  */
 @Composable
 inline fun LazyPagingItems<*>.FUIStateAppend(
@@ -65,14 +65,12 @@ inline fun LazyPagingItems<*>.FUIStateAppend(
     /** 没有更多数据 */
     stateNoMoreData: @Composable () -> Unit = {},
 ) {
-    if (!fIsEmpty()) {
-        when (val loadState = loadState.append) {
-            is LoadState.Loading -> stateLoading()
-            is LoadState.Error -> stateError(loadState.error)
-            is LoadState.NotLoading -> {
-                if (loadState.endOfPaginationReached) {
-                    stateNoMoreData()
-                }
+    when (val loadState = loadState.append) {
+        is LoadState.Loading -> stateLoading()
+        is LoadState.Error -> stateError(loadState.error)
+        is LoadState.NotLoading -> {
+            if (loadState.endOfPaginationReached) {
+                stateNoMoreData()
             }
         }
     }
@@ -88,7 +86,7 @@ fun LazyPagingItems<*>.fShowUIStatePrepend(): Boolean {
 }
 
 /**
- * 数据不为空时，[CombinedLoadStates.prepend]状态
+ * [CombinedLoadStates.prepend]状态
  */
 @Composable
 inline fun LazyPagingItems<*>.FUIStatePrepend(
@@ -97,11 +95,9 @@ inline fun LazyPagingItems<*>.FUIStatePrepend(
     /** 加载错误 */
     stateError: @Composable (Throwable) -> Unit = {},
 ) {
-    if (!fIsEmpty()) {
-        when (val loadState = loadState.prepend) {
-            is LoadState.Loading -> stateLoading()
-            is LoadState.Error -> stateError(loadState.error)
-            else -> {}
-        }
+    when (val loadState = loadState.prepend) {
+        is LoadState.Loading -> stateLoading()
+        is LoadState.Error -> stateError(loadState.error)
+        else -> {}
     }
 }
