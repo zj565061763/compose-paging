@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.Flow
 class SampleActivity : ComponentActivity() {
 
     private val _flow: Flow<PagingData<UserModel>> = Pager(
-        config = PagingConfig(pageSize = 20)
+        config = PagingConfig(pageSize = 20, prefetchDistance = 1)
     ) { UserPagingSource() }.flow.cachedIn(lifecycleScope)
 
     override fun onCreate(savedInstanceState: Bundle?) {
