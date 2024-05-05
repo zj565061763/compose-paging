@@ -26,10 +26,12 @@ fun LazyPagingItems<*>.fIsEmpty(): Boolean {
 }
 
 /**
- * 数据为空时，[CombinedLoadStates.refresh]状态
+ * [CombinedLoadStates.refresh]状态
  */
 @Composable
 inline fun LazyPagingItems<*>.FUIStateRefresh(
+    /** 是否检查数据为空 */
+    checkEmpty: Boolean = true,
     /** 加载中 */
     stateLoading: @Composable () -> Unit = {},
     /** 加载错误 */
@@ -37,7 +39,7 @@ inline fun LazyPagingItems<*>.FUIStateRefresh(
     /** 无数据 */
     stateNoData: @Composable () -> Unit = {},
 ) {
-    if (fIsEmpty()) {
+    if (checkEmpty && fIsEmpty()) {
         when (val loadState = loadState.refresh) {
             is LoadState.Loading -> stateLoading()
             is LoadState.Error -> stateError(loadState.error)
