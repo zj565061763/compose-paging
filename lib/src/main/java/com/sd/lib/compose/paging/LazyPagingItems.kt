@@ -54,7 +54,7 @@ fun LazyPagingItems<*>.fShowUIStateAppend(): Boolean {
 }
 
 /**
- * [CombinedLoadStates.append]状态
+ * 数据不为空时，[CombinedLoadStates.append]状态
  */
 @Composable
 inline fun LazyPagingItems<*>.FUIStateAppend(
@@ -88,7 +88,7 @@ fun LazyPagingItems<*>.fShowUIStatePrepend(): Boolean {
 }
 
 /**
- * [CombinedLoadStates.prepend]状态
+ * 数据不为空时，[CombinedLoadStates.prepend]状态
  */
 @Composable
 inline fun LazyPagingItems<*>.FUIStatePrepend(
