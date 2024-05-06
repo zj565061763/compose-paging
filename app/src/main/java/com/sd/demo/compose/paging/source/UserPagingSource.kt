@@ -1,5 +1,6 @@
 package com.sd.demo.compose.paging.source
 
+import androidx.paging.PagingState
 import com.sd.demo.compose.paging.UserModel
 import com.sd.demo.compose.paging.logMsg
 import com.sd.lib.compose.paging.FIntPagingSource
@@ -38,5 +39,12 @@ class UserPagingSource : FIntPagingSource<UserModel>() {
             )
         }
         return list
+    }
+
+    override fun getRefreshKey(state: PagingState<Int, UserModel>): Int? {
+        return state.anchorPosition?.let { anchorPosition ->
+            val anchorPage = state.closestPageToPosition(anchorPosition)
+            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
+        }
     }
 }

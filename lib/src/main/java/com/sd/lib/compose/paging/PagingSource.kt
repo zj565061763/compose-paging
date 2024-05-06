@@ -10,7 +10,7 @@ import kotlinx.coroutines.CancellationException
 abstract class FIntPagingSource<Value : Any>(
     /** 起始页码 */
     private val initialKey: Int = 1,
-) : FBaseIntPagingSource<Value>() {
+) : FPagingSource<Int, Value>() {
 
     override suspend fun loadImpl(params: LoadParams<Int>): LoadResult<Int, Value> {
         val key = params.key ?: initialKey
@@ -22,13 +22,6 @@ abstract class FIntPagingSource<Value : Any>(
         )
     }
 
-    override fun getRefreshKey(state: PagingState<Int, Value>): Int? {
-        return state.anchorPosition?.let { anchorPosition ->
-            val anchorPage = state.closestPageToPosition(anchorPosition)
-            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
-        }
-    }
-
     /**
      * 加载数据
      *
@@ -38,16 +31,7 @@ abstract class FIntPagingSource<Value : Any>(
     protected abstract suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<Value>?
 }
 
-abstract class FBaseIntPagingSource<Value : Any> : FBasePagingSource<Int, Value>() {
-    override fun getRefreshKey(state: PagingState<Int, Value>): Int? {
-        return state.anchorPosition?.let { anchorPosition ->
-            val anchorPage = state.closestPageToPosition(anchorPosition)
-            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
-        }
-    }
-}
-
-abstract class FBasePagingSource<Key : Any, Value : Any> : PagingSource<Key, Value>() {
+abstract class FPagingSource<Key : Any, Value : Any> : PagingSource<Key, Value>() {
 
     final override suspend fun load(params: LoadParams<Key>): LoadResult<Key, Value> {
         return runCatching {
