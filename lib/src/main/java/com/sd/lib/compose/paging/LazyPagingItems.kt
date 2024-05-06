@@ -39,12 +39,13 @@ inline fun LazyPagingItems<*>.FUIStateRefresh(
     /** 无数据 */
     stateNoData: @Composable () -> Unit = {},
 ) {
-    if (checkEmpty && fIsEmpty()) {
-        when (val loadState = loadState.refresh) {
-            is LoadState.Loading -> stateLoading()
-            is LoadState.Error -> stateError(loadState.error)
-            is LoadState.NotLoading -> stateNoData()
-        }
+    if (checkEmpty && !fIsEmpty()) {
+        return
+    }
+    when (val loadState = loadState.refresh) {
+        is LoadState.Loading -> stateLoading()
+        is LoadState.Error -> stateError(loadState.error)
+        is LoadState.NotLoading -> stateNoData()
     }
 }
 
