@@ -29,6 +29,7 @@ class MainActivity : ComponentActivity() {
                 Content(
                     listActivity = listOf(
                         SampleActivity::class.java,
+                        SampleUpdateActivity::class.java,
                         SampleUIStateError::class.java,
                         SampleUIStateNoData::class.java,
                     ),
