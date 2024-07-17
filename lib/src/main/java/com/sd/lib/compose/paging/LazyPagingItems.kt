@@ -5,6 +5,8 @@ import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 
+//-------------------- refresh --------------------
+
 /**
  * 是否刷新中
  */
@@ -32,6 +34,8 @@ inline fun LazyPagingItems<*>.FUIStateRefresh(
         }
     }
 }
+
+//-------------------- append --------------------
 
 /**
  * 是否显示[CombinedLoadStates.append]状态
@@ -62,6 +66,8 @@ inline fun LazyPagingItems<*>.FUIStateAppend(
         }
     }
 }
+
+//-------------------- prepend --------------------
 
 /**
  * 是否显示[CombinedLoadStates.prepend]状态
