@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.Pager
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -26,8 +27,10 @@ import com.sd.demo.compose.paging.source.SinglePageUserPagingSource
 import com.sd.demo.compose.paging.theme.AppTheme
 import com.sd.lib.compose.paging.FPagingLazyColumn
 import com.sd.lib.compose.paging.fPagingConfig
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
 class SampleUpdateActivity : ComponentActivity() {
@@ -35,26 +38,65 @@ class SampleUpdateActivity : ComponentActivity() {
         .flow
         .cachedIn(lifecycleScope)
 
-    private val _updateNameFlow = MutableStateFlow(mapOf<String, String>())
-
-    private val _combineFlow = combine(_flow, _updateNameFlow) { data, name ->
-        data.map { item ->
-            name[item.id]?.let { item.copy(name = it) } ?: item
-        }
-    }
+    private val _updater = _flow.updater { it.id }
+    private val _updateFlow = _updater.updateFlow
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                val items = _combineFlow.collectAsLazyPagingItems()
+                val items = _updateFlow.collectAsLazyPagingItems()
                 Content(
                     items = items,
                     onClickItem = { item ->
-                        _updateNameFlow.update { it + (item.id to "changed") }
+                        _updater.update(item.copy(name = "change"))
                     },
                 )
             }
+        }
+    }
+}
+
+private fun <T : Any> Flow<PagingData<T>>.updater(
+    getID: (T) -> Any,
+): FPagingUpdater<T> {
+    return FPagingUpdater(this, getID)
+}
+
+private class FPagingUpdater<T : Any>(
+    flow: Flow<PagingData<T>>,
+    private val getID: (T) -> Any,
+) {
+    private var _currentPagingData: PagingData<T>? = null
+    private val _updateFlow: MutableStateFlow<Map<PagingData<T>, Map<Any, T>>> = MutableStateFlow(mutableMapOf())
+
+    val updateFlow = flow
+        .map { it.also { setCurrentPagingData(it) } }
+        .combine(_updateFlow) { data, update ->
+            update[data]?.let { map ->
+                data.map { item ->
+                    val id = getID(item)
+                    map[id] ?: item
+                }
+            } ?: data
+        }
+
+    fun update(item: T) {
+        val pagingData = _currentPagingData ?: return
+        val id = getID(item)
+        _updateFlow.update { value ->
+            val map = value[pagingData]
+            if (map == null) {
+                value + (pagingData to mapOf(id to item))
+            } else {
+                value + (pagingData to (map + (id to item)))
+            }
+        }
+    }
+
+    private fun setCurrentPagingData(pagingData: PagingData<T>) {
+        if (_currentPagingData != pagingData) {
+            _currentPagingData = pagingData
         }
     }
 }
