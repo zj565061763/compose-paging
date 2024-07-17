@@ -16,8 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -26,13 +24,13 @@ import androidx.paging.compose.itemKey
 import com.sd.demo.compose.paging.source.UserPagingSource
 import com.sd.demo.compose.paging.theme.AppTheme
 import com.sd.lib.compose.paging.FPagingLazyColumn
-import kotlinx.coroutines.flow.Flow
+import com.sd.lib.compose.paging.fPagingConfig
 
 class SampleActivity : ComponentActivity() {
 
-    private val _flow: Flow<PagingData<UserModel>> = Pager(
-        config = PagingConfig(pageSize = 20, prefetchDistance = 1)
-    ) { UserPagingSource() }.flow.cachedIn(lifecycleScope)
+    private val _flow = Pager(fPagingConfig()) { UserPagingSource() }
+        .flow
+        .cachedIn(lifecycleScope)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
