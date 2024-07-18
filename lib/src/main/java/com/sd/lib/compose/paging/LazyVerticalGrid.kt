@@ -54,7 +54,7 @@ fun <T : Any> FPagingLazyVerticalGrid(
     afterItems: (LazyGridScope.() -> Unit)? = null,
 
     /** Item内容 */
-    itemContent: @Composable (item: T) -> Unit,
+    itemContent: @Composable (index: Int, item: T) -> Unit,
 ) {
     LazyVerticalGrid(
         columns = columns,
@@ -86,7 +86,7 @@ fun <T : Any> FPagingLazyVerticalGrid(
             span = itemSpan,
         ) { index ->
             items[index]?.let { item ->
-                itemContent(item)
+                itemContent(index, item)
             }
         }
 

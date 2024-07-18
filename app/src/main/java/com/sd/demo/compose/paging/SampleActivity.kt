@@ -63,11 +63,11 @@ private fun Content(
             items = items,
             itemKey = items.itemKey { it.id },
             itemContentType = items.itemContentType(),
-        ) { user ->
+        ) { _, item ->
             Card(modifier = Modifier.padding(10.dp)) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = user.id)
-                    Text(text = user.name)
+                    Text(text = item.id)
+                    Text(text = item.name)
                 }
             }
         }

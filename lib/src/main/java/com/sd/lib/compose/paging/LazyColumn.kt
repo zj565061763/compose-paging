@@ -50,7 +50,7 @@ fun <T : Any> FPagingLazyColumn(
     afterItems: (LazyListScope.() -> Unit)? = null,
 
     /** Item内容 */
-    itemContent: @Composable (item: T) -> Unit,
+    itemContent: @Composable (index: Int, item: T) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -79,7 +79,7 @@ fun <T : Any> FPagingLazyColumn(
             contentType = itemContentType,
         ) { index ->
             items[index]?.let { item ->
-                itemContent(item)
+                itemContent(index, item)
             }
         }
 

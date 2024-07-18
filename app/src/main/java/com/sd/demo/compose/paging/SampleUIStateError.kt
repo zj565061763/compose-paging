@@ -52,7 +52,7 @@ private fun Content(
         FPagingLazyColumn(
             modifier = Modifier.fillMaxSize(),
             items = items,
-        ) {
+        ) { _, _ ->
 
         }
 

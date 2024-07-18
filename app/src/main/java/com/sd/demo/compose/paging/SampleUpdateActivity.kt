@@ -122,7 +122,7 @@ private fun Content(
             items = items,
             itemKey = items.itemKey { it.id },
             itemContentType = items.itemContentType(),
-        ) { item ->
+        ) { _, item ->
             Card(
                 modifier = Modifier.padding(10.dp),
                 onClick = { onClickItem(item) },
