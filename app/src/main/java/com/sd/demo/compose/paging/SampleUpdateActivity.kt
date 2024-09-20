@@ -69,11 +69,11 @@ private class FPagingUpdater<T : Any>(
    private val getID: (T) -> Any,
 ) {
    private var _currentPagingData: PagingData<T>? = null
-   private val _flow: MutableStateFlow<Map<PagingData<T>, Map<Any, T>>> = MutableStateFlow(mutableMapOf())
+   private val _updateFlow: MutableStateFlow<Map<PagingData<T>, Map<Any, T>>> = MutableStateFlow(mutableMapOf())
 
    val flow = flow
       .onEach { _currentPagingData = it }
-      .combine(_flow) { data, update ->
+      .combine(_updateFlow) { data, update ->
          update[data]?.let { map ->
             data.map { item ->
                val id = getID(item)
@@ -85,7 +85,7 @@ private class FPagingUpdater<T : Any>(
    fun update(item: T) {
       val pagingData = _currentPagingData ?: return
       val id = getID(item)
-      _flow.update { value ->
+      _updateFlow.update { value ->
          val map = value[pagingData]
          if (map == null) {
             value + (pagingData to mapOf(id to item))
