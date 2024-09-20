@@ -22,6 +22,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
+import androidx.paging.filter
 import androidx.paging.map
 import com.sd.demo.compose.paging.theme.AppTheme
 import com.sd.lib.compose.paging.FIntPagingSource
@@ -38,21 +39,21 @@ import java.util.UUID
 
 class SampleUpdateActivity : ComponentActivity() {
 
-   private val _flow = fPagerFlow { UserPagingSource() }
+   private val _modifier = fPagerFlow { UserPagingSource() }
       .cachedIn(lifecycleScope)
+      .modifier { it.id }
 
-   private val _updater = _flow.updater { it.id }
-   private val _updaterFlow = _updater.flow
+   private val _flow = _modifier.flow
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       setContent {
          AppTheme {
-            val items = _updaterFlow.collectAsLazyPagingItems()
+            val items = _flow.collectAsLazyPagingItems()
             Content(
                items = items,
                onClickItem = { item ->
-                  _updater.update(item.copy(name = "change"))
+                  _modifier.update(item.copy(name = "change"))
                },
             )
          }
@@ -97,14 +98,14 @@ private class UserPagingSource : FIntPagingSource<UserModel>() {
       delay(1_000)
       return List(20) { index ->
          UserModel(
-            id = index.toString(),
-            name = UUID.randomUUID().toString(),
+            id = UUID.randomUUID().toString(),
+            name = index.toString(),
          )
       }
    }
 }
 
-private fun <T : Any> Flow<PagingData<T>>.updater(
+private fun <T : Any> Flow<PagingData<T>>.modifier(
    getID: (T) -> Any,
 ): FPagingUpdater<T> {
    return FPagingUpdater(this, getID)
@@ -115,15 +116,24 @@ private class FPagingUpdater<T : Any>(
    private val getID: (T) -> Any,
 ) {
    private var _currentPagingData: PagingData<T>? = null
+   private val _removeFlow: MutableStateFlow<Map<PagingData<T>, Set<Any>>> = MutableStateFlow(mutableMapOf())
    private val _updateFlow: MutableStateFlow<Map<PagingData<T>, Map<Any, T>>> = MutableStateFlow(mutableMapOf())
 
    val flow = flow
       .onEach { _currentPagingData = it }
+      .combine(_removeFlow) { data, remove ->
+         remove[data]?.let { holder ->
+            data.filter { item ->
+               val id = getID(item)
+               !holder.contains(id)
+            }
+         } ?: data
+      }
       .combine(_updateFlow) { data, update ->
-         update[data]?.let { map ->
+         update[data]?.let { holder ->
             data.map { item ->
                val id = getID(item)
-               map[id] ?: item
+               holder[id] ?: item
             }
          } ?: data
       }
