@@ -16,7 +16,7 @@ fun <T : Any> LazyListScope.fPagingItems(
    /** 获取Item的ContentType */
    itemContentType: (index: Int) -> Any? = items.itemContentType(),
    /** Item内容 */
-   itemContent: @Composable (index: Int, item: T) -> Unit,
+   itemContent: @Composable LazyItemScope.(index: Int, item: T) -> Unit,
 ) {
    items(
       count = items.itemCount,
