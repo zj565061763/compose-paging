@@ -9,31 +9,25 @@ import androidx.paging.PagingSource.LoadResult.Page.Companion.COUNT_UNDEFINED
 import kotlinx.coroutines.flow.Flow
 
 fun <Key : Any, Value : Any> fPagerFlow(
-   config: PagingConfig = fPagingConfig(),
-   initialKey: Key? = null,
-   pagingSourceFactory: () -> PagingSource<Key, Value>,
-): Flow<PagingData<Value>> {
-   return Pager(
-      config = config,
-      initialKey = initialKey,
-      pagingSourceFactory = pagingSourceFactory,
-   ).flow
-}
-
-fun fPagingConfig(
    pageSize: Int = 20,
    prefetchDistance: Int = pageSize,
    enablePlaceholders: Boolean = false,
    initialLoadSize: Int = pageSize,
    maxSize: Int = MAX_SIZE_UNBOUNDED,
    jumpThreshold: Int = COUNT_UNDEFINED,
-): PagingConfig {
-   return PagingConfig(
-      pageSize = pageSize,
-      prefetchDistance = prefetchDistance,
-      enablePlaceholders = enablePlaceholders,
-      initialLoadSize = initialLoadSize,
-      maxSize = maxSize,
-      jumpThreshold = jumpThreshold,
-   )
+   initialKey: Key? = null,
+   pagingSourceFactory: () -> PagingSource<Key, Value>,
+): Flow<PagingData<Value>> {
+   return Pager(
+      config = PagingConfig(
+         pageSize = pageSize,
+         prefetchDistance = prefetchDistance,
+         enablePlaceholders = enablePlaceholders,
+         initialLoadSize = initialLoadSize,
+         maxSize = maxSize,
+         jumpThreshold = jumpThreshold,
+      ),
+      initialKey = initialKey,
+      pagingSourceFactory = pagingSourceFactory,
+   ).flow
 }

@@ -25,7 +25,6 @@ import com.sd.lib.compose.paging.FIntPagingSource
 import com.sd.lib.compose.paging.fIsRefreshing
 import com.sd.lib.compose.paging.fPagerFlow
 import com.sd.lib.compose.paging.fPagingAppend
-import com.sd.lib.compose.paging.fPagingConfig
 import com.sd.lib.compose.paging.fPagingItems
 import kotlinx.coroutines.delay
 import java.io.IOException
@@ -33,9 +32,8 @@ import java.util.UUID
 
 class SampleActivity : ComponentActivity() {
 
-   private val _flow = fPagerFlow(
-      config = fPagingConfig(prefetchDistance = 1)
-   ) { UserPagingSource() }.cachedIn(lifecycleScope)
+   private val _flow = fPagerFlow(prefetchDistance = 1) { UserPagingSource() }
+      .cachedIn(lifecycleScope)
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -65,9 +63,11 @@ private fun Content(
             itemKey = items.itemKey { it.id },
          ) { _, item ->
             Card(modifier = Modifier.padding(10.dp)) {
-               Column(modifier = Modifier.fillMaxWidth()) {
-                  Text(text = item.id)
+               Column(
+                  modifier = Modifier.fillMaxWidth()
+               ) {
                   Text(text = item.name)
+                  Text(text = item.id)
                }
             }
          }
