@@ -35,9 +35,11 @@ class FPagingDataModifier<T : Any>(
    val flow: Flow<PagingData<T>> = flow
       .flowOn(Dispatchers.Main)
       .onEach {
+         logMsg { "flow onEach thread:${Thread.currentThread().name}" }
          _realPagingData = it
       }
       .combine(_removeFlow) { data, _ ->
+         logMsg { "flow remove thread:${Thread.currentThread().name}" }
          _removeHolder[_realPagingData]?.let { holder ->
             data.filter { item ->
                val id = getID(item)
@@ -46,6 +48,7 @@ class FPagingDataModifier<T : Any>(
          } ?: data
       }
       .combine(_updateFlow) { data, _ ->
+         logMsg { "flow update thread:${Thread.currentThread().name}" }
          _updateHolder[_realPagingData]?.let { holder ->
             data.map { item ->
                val id = getID(item)
