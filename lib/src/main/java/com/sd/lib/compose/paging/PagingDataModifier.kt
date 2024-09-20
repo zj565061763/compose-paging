@@ -1,4 +1,4 @@
-package com.sd.demo.compose.paging
+package com.sd.lib.compose.paging
 
 import androidx.paging.PagingData
 import androidx.paging.filter
@@ -39,10 +39,8 @@ class FPagingDataModifier<T : Any>(
          _realPagingData = it
          _removeHolder.clear()
          _updateHolder.clear()
-         logMsg { "flow onEach remove:${_removeHolder.size} update:${_updateHolder.size}" }
       }
       .combine(_removeFlow) { data, _ ->
-         logMsg { "flow remove" }
          _removeHolder[_realPagingData]?.let { holder ->
             data.filter { item ->
                val id = getID(item)
@@ -51,7 +49,6 @@ class FPagingDataModifier<T : Any>(
          } ?: data
       }
       .combine(_updateFlow) { data, _ ->
-         logMsg { "flow update" }
          _updateHolder[_realPagingData]?.let { holder ->
             data.map { item ->
                val id = getID(item)
