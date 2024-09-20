@@ -1,4 +1,4 @@
-package com.sd.demo.compose.paging
+package com.sd.lib.compose.paging
 
 import androidx.paging.PagingData
 import androidx.paging.filter
@@ -14,11 +14,11 @@ import kotlinx.coroutines.withContext
 
 fun <T : Any> Flow<PagingData<T>>.modifier(
    getID: (T) -> Any,
-): FPagingModifier<T> {
-   return FPagingModifier(this, getID)
+): FPagingDataModifier<T> {
+   return FPagingDataModifier(this, getID)
 }
 
-class FPagingModifier<T : Any>(
+class FPagingDataModifier<T : Any>(
    flow: Flow<PagingData<T>>,
    private val getID: (T) -> Any,
 ) {
