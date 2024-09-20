@@ -28,6 +28,7 @@ import com.sd.lib.compose.paging.FIntPagingSource
 import com.sd.lib.compose.paging.fIsRefreshing
 import com.sd.lib.compose.paging.fPagerFlow
 import com.sd.lib.compose.paging.fPagingItems
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -37,7 +38,7 @@ import java.util.UUID
 
 class SampleUpdateActivity : ComponentActivity() {
 
-   private val _flow = fPagerFlow { SinglePageUserPagingSource() }
+   private val _flow = fPagerFlow { UserPagingSource() }
       .cachedIn(lifecycleScope)
 
    private val _updater = _flow.updater { it.id }
@@ -91,17 +92,14 @@ private fun Content(
    }
 }
 
-private class SinglePageUserPagingSource : FIntPagingSource<UserModel>() {
+private class UserPagingSource : FIntPagingSource<UserModel>() {
    override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<UserModel> {
-      return if (key == initialKey) {
-         List(20) { index ->
-            UserModel(
-               id = index.toString(),
-               name = UUID.randomUUID().toString(),
-            )
-         }
-      } else {
-         emptyList()
+      delay(1_000)
+      return List(20) { index ->
+         UserModel(
+            id = index.toString(),
+            name = UUID.randomUUID().toString(),
+         )
       }
    }
 }

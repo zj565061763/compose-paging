@@ -32,7 +32,7 @@ import java.util.UUID
 
 class SampleActivity : ComponentActivity() {
 
-   private val _flow = fPagerFlow(prefetchDistance = 1) { UserPagingSource() }
+   private val _flow = fPagerFlow(prefetchDistance = 1) { SamplePagingSource() }
       .cachedIn(lifecycleScope)
 
    override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,7 +75,7 @@ private fun Content(
    }
 }
 
-private class UserPagingSource : FIntPagingSource<UserModel>() {
+private class SamplePagingSource : FIntPagingSource<UserModel>() {
    private val _maxPage = 5
    private val _errorPage = 3
    private var _hasLoadError = false
