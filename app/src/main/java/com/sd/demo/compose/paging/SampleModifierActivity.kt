@@ -107,11 +107,11 @@ private class UserPagingSource : FIntPagingSource<UserModel>() {
 
 private fun <T : Any> Flow<PagingData<T>>.modifier(
    getID: (T) -> Any,
-): FPagingUpdater<T> {
-   return FPagingUpdater(this, getID)
+): FPagingModifier<T> {
+   return FPagingModifier(this, getID)
 }
 
-private class FPagingUpdater<T : Any>(
+private class FPagingModifier<T : Any>(
    flow: Flow<PagingData<T>>,
    private val getID: (T) -> Any,
 ) {
@@ -119,7 +119,7 @@ private class FPagingUpdater<T : Any>(
    private val _removeFlow: MutableStateFlow<Map<PagingData<T>, Set<Any>>> = MutableStateFlow(mutableMapOf())
    private val _updateFlow: MutableStateFlow<Map<PagingData<T>, Map<Any, T>>> = MutableStateFlow(mutableMapOf())
 
-   val flow = flow
+   val flow: Flow<PagingData<T>> = flow
       .onEach { _currentPagingData = it }
       .combine(_removeFlow) { data, remove ->
          remove[data]?.let { holder ->
