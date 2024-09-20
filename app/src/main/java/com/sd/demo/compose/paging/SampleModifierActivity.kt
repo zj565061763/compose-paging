@@ -18,28 +18,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
-import androidx.paging.filter
-import androidx.paging.map
 import com.sd.demo.compose.paging.theme.AppTheme
 import com.sd.lib.compose.paging.FIntPagingSource
 import com.sd.lib.compose.paging.fIsRefreshing
 import com.sd.lib.compose.paging.fPagerFlow
 import com.sd.lib.compose.paging.fPagingItems
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 class SampleModifierActivity : ComponentActivity() {
@@ -54,14 +48,19 @@ class SampleModifierActivity : ComponentActivity() {
       super.onCreate(savedInstanceState)
       setContent {
          AppTheme {
+            val coroutineScope = rememberCoroutineScope()
             val items = _flow.collectAsLazyPagingItems()
             Content(
                items = items,
                onClickItem = { item ->
-                  _modifier.update(item.copy(name = "change"))
+                  coroutineScope.launch {
+                     _modifier.update(item.copy(name = "change"))
+                  }
                },
                onLongClickItem = { item ->
-                  _modifier.remove(item.id)
+                  coroutineScope.launch {
+                     _modifier.remove(item.id)
+                  }
                }
             )
          }
@@ -118,67 +117,6 @@ private class UserPagingSource : FIntPagingSource<UserModel>() {
             id = UUID.randomUUID().toString(),
             name = index.toString(),
          )
-      }
-   }
-}
-
-private fun <T : Any> Flow<PagingData<T>>.modifier(
-   getID: (T) -> Any,
-): FPagingModifier<T> {
-   return FPagingModifier(this, getID)
-}
-
-private class FPagingModifier<T : Any>(
-   flow: Flow<PagingData<T>>,
-   private val getID: (T) -> Any,
-) {
-   private var _currentPagingData: PagingData<T>? = null
-   private val _removeFlow: MutableStateFlow<Map<PagingData<T>, Set<Any>>> = MutableStateFlow(mutableMapOf())
-   private val _updateFlow: MutableStateFlow<Map<PagingData<T>, Map<Any, T>>> = MutableStateFlow(mutableMapOf())
-
-   val flow: Flow<PagingData<T>> = flow
-      .onEach {
-         _currentPagingData = it
-      }
-      .combine(_removeFlow) { data, remove ->
-         remove[_currentPagingData]?.let { holder ->
-            data.filter { item ->
-               val id = getID(item)
-               !holder.contains(id)
-            }
-         } ?: data
-      }
-      .combine(_updateFlow) { data, update ->
-         update[_currentPagingData]?.let { holder ->
-            data.map { item ->
-               val id = getID(item)
-               holder[id] ?: item
-            }
-         } ?: data
-      }
-
-   fun update(item: T) {
-      val pagingData = _currentPagingData ?: return
-      val id = getID(item)
-      _updateFlow.update { value ->
-         val holder = value[pagingData]
-         if (holder == null) {
-            value + (pagingData to mapOf(id to item))
-         } else {
-            value + (pagingData to (holder + (id to item)))
-         }
-      }
-   }
-
-   fun remove(id: Any) {
-      val pagingData = _currentPagingData ?: return
-      _removeFlow.update { value ->
-         val holder = value[pagingData]
-         if (holder == null) {
-            value + (pagingData to setOf(id))
-         } else {
-            value + (pagingData to (holder + id))
-         }
       }
    }
 }
