@@ -95,6 +95,7 @@ private fun Content(
                modifier = Modifier
                   .fillMaxWidth()
                   .background(MaterialTheme.colorScheme.surfaceContainer)
+                  .animateItem()
                   .combinedClickable(
                      onClick = { onClickItem(item) },
                      onLongClick = { onLongClickItem(item) },
