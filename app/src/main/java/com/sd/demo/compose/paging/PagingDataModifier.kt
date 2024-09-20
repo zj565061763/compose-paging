@@ -27,16 +27,18 @@ class FPagingDataModifier<T : Any>(
    private var _realPagingData: PagingData<T>? = null
 
    private val _removeHolder: MutableMap<PagingData<T>, MutableSet<Any>> = mutableMapOf()
-   private val _removeFlow = MutableStateFlow(false)
-
    private val _updateHolder: MutableMap<PagingData<T>, MutableMap<Any, T>> = mutableMapOf()
+
+   private val _removeFlow = MutableStateFlow(false)
    private val _updateFlow = MutableStateFlow(false)
 
    val flow: Flow<PagingData<T>> = flow
       .flowOn(Dispatchers.Main)
       .onEach {
-         logMsg { "flow onEach" }
          _realPagingData = it
+         _removeHolder.clear()
+         _updateHolder.clear()
+         logMsg { "flow onEach remove:${_removeHolder.size} update:${_updateHolder.size}" }
       }
       .combine(_removeFlow) { data, _ ->
          logMsg { "flow remove" }
