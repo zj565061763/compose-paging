@@ -123,8 +123,8 @@ private fun Content(
       ) {
          fPagingItems(
             items = items,
-            itemKey = items.itemKey { it.id },
-            itemContentType = items.itemContentType(),
+            key = items.itemKey { it.id },
+            contentType = items.itemContentType(),
          ) { _, item ->
             Card(
                modifier = Modifier.padding(10.dp),

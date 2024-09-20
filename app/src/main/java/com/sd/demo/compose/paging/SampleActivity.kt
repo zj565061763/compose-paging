@@ -60,12 +60,10 @@ private fun Content(
       LazyColumn(modifier = Modifier.fillMaxSize()) {
          fPagingItems(
             items = items,
-            itemKey = items.itemKey { it.id },
+            key = items.itemKey { it.id },
          ) { _, item ->
             Card(modifier = Modifier.padding(10.dp)) {
-               Column(
-                  modifier = Modifier.fillMaxWidth()
-               ) {
+               Column(modifier = Modifier.fillMaxWidth()) {
                   Text(text = item.name)
                   Text(text = item.id)
                }
