@@ -5,41 +5,34 @@ import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.runtime.Composable
-import androidx.paging.CombinedLoadStates
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 
 fun <T : Any> LazyGridScope.fPagingItems(
-   /** Item数据 */
    items: LazyPagingItems<T>,
-   /** 获取Item的Key */
-   itemKey: ((index: Int) -> Any)? = items.itemKey(),
-   /** 获取Item的ContentType */
-   itemContentType: (index: Int) -> Any? = items.itemContentType(),
-   itemSpan: (LazyGridItemSpanScope.(index: Int) -> GridItemSpan)? = null,
-   /** Item内容 */
-   itemContent: @Composable LazyGridItemScope.(index: Int, item: T) -> Unit,
+   key: ((index: Int) -> Any)? = items.itemKey(),
+   contentType: (index: Int) -> Any? = items.itemContentType(),
+   span: (LazyGridItemSpanScope.(index: Int) -> GridItemSpan)? = null,
+   content: @Composable LazyGridItemScope.(index: Int, item: T) -> Unit,
 ) {
    items(
       count = items.itemCount,
-      key = itemKey,
-      contentType = itemContentType,
-      span = itemSpan,
+      key = key,
+      contentType = contentType,
+      span = span,
    ) { index ->
       items[index]?.let { item ->
-         itemContent(index, item)
+         content(index, item)
       }
    }
 }
 
 fun LazyGridScope.fPagingAppend(
-   /** Item数据 */
    items: LazyPagingItems<*>,
    key: Any? = "paging append ui state",
    contentType: Any? = "paging append ui state",
    span: (LazyGridItemSpanScope.() -> GridItemSpan)? = { GridItemSpan(maxLineSpan) },
-   /** [CombinedLoadStates.append]状态UI */
    content: @Composable LazyGridItemScope.() -> Unit = { FPagingAppend(items) },
 ) {
    if (items.fShowUIStateAppend()) {
@@ -53,12 +46,10 @@ fun LazyGridScope.fPagingAppend(
 }
 
 fun LazyGridScope.fPagingPrepend(
-   /** Item数据 */
    items: LazyPagingItems<*>,
    key: Any? = "paging prepend ui state",
    contentType: Any? = "paging prepend ui state",
    span: (LazyGridItemSpanScope.() -> GridItemSpan)? = { GridItemSpan(maxLineSpan) },
-   /** [CombinedLoadStates.prepend]状态UI */
    content: @Composable LazyGridItemScope.() -> Unit = { FPagingPrepend(items) },
 ) {
    if (items.fShowUIStatePrepend()) {
