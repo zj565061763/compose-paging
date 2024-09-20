@@ -32,6 +32,7 @@ class FPagingDataModifier<T : Any>(
    private val _removeFlow = MutableStateFlow(false)
    private val _updateFlow = MutableStateFlow(false)
 
+   /** 数据流 */
    val flow: Flow<PagingData<T>> = flow
       .flowOn(Dispatchers.Main)
       .onEach {
@@ -60,6 +61,9 @@ class FPagingDataModifier<T : Any>(
       }
       .flowOn(_dispatcher)
 
+   /**
+    * 移除ID为[id]的项
+    */
    suspend fun remove(id: Any) {
       withContext(_dispatcher) {
          val key = _realPagingData ?: return@withContext
@@ -71,6 +75,9 @@ class FPagingDataModifier<T : Any>(
       }
    }
 
+   /**
+    * 更新项
+    */
    suspend fun update(item: T) {
       withContext(_dispatcher) {
          val key = _realPagingData ?: return@withContext
