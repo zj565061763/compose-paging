@@ -55,7 +55,7 @@ class SampleModifierActivity : ComponentActivity() {
                items = items,
                onClickItem = { item ->
                   coroutineScope.launch {
-                     _modifier.update(item.copy(name = "change"))
+                     _modifier.update(item.copy(name = "updated"))
                   }
                },
                onLongClickItem = { item ->
