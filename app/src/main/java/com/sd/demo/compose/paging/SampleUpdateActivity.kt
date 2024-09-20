@@ -40,13 +40,13 @@ class SampleUpdateActivity : ComponentActivity() {
       .cachedIn(lifecycleScope)
 
    private val _updater = _flow.updater { it.id }
-   private val _updateFlow = _updater.updateFlow
+   private val _updaterFlow = _updater.flow
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       setContent {
          AppTheme {
-            val items = _updateFlow.collectAsLazyPagingItems()
+            val items = _updaterFlow.collectAsLazyPagingItems()
             Content(
                items = items,
                onClickItem = { item ->
@@ -71,7 +71,7 @@ private class FPagingUpdater<T : Any>(
    private var _currentPagingData: PagingData<T>? = null
    private val _updateFlow: MutableStateFlow<Map<PagingData<T>, Map<Any, T>>> = MutableStateFlow(mutableMapOf())
 
-   val updateFlow = flow
+   val flow = flow
       .map { it.also { setCurrentPagingData(it) } }
       .combine(_updateFlow) { data, update ->
          update[data]?.let { map ->
