@@ -30,7 +30,7 @@ import com.sd.lib.compose.paging.fPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import java.util.UUID
 
@@ -69,11 +69,11 @@ private class FPagingUpdater<T : Any>(
    private val getID: (T) -> Any,
 ) {
    private var _currentPagingData: PagingData<T>? = null
-   private val _updateFlow: MutableStateFlow<Map<PagingData<T>, Map<Any, T>>> = MutableStateFlow(mutableMapOf())
+   private val _flow: MutableStateFlow<Map<PagingData<T>, Map<Any, T>>> = MutableStateFlow(mutableMapOf())
 
    val flow = flow
-      .map { it.also { setCurrentPagingData(it) } }
-      .combine(_updateFlow) { data, update ->
+      .onEach { _currentPagingData = it }
+      .combine(_flow) { data, update ->
          update[data]?.let { map ->
             data.map { item ->
                val id = getID(item)
@@ -85,19 +85,13 @@ private class FPagingUpdater<T : Any>(
    fun update(item: T) {
       val pagingData = _currentPagingData ?: return
       val id = getID(item)
-      _updateFlow.update { value ->
+      _flow.update { value ->
          val map = value[pagingData]
          if (map == null) {
             value + (pagingData to mapOf(id to item))
          } else {
             value + (pagingData to (map + (id to item)))
          }
-      }
-   }
-
-   private fun setCurrentPagingData(pagingData: PagingData<T>) {
-      if (_currentPagingData != pagingData) {
-         _currentPagingData = pagingData
       }
    }
 }
