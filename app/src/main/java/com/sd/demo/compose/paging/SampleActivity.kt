@@ -28,48 +28,48 @@ import com.sd.lib.compose.paging.fPagingConfig
 
 class SampleActivity : ComponentActivity() {
 
-    private val _flow = Pager(fPagingConfig()) { UserPagingSource() }
-        .flow
-        .cachedIn(lifecycleScope)
+   private val _flow = Pager(fPagingConfig()) { UserPagingSource() }
+      .flow
+      .cachedIn(lifecycleScope)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                val items = _flow.collectAsLazyPagingItems()
-                Content(items = items)
-            }
-        }
-    }
+   override fun onCreate(savedInstanceState: Bundle?) {
+      super.onCreate(savedInstanceState)
+      setContent {
+         AppTheme {
+            val items = _flow.collectAsLazyPagingItems()
+            Content(items = items)
+         }
+      }
+   }
 }
 
 @Composable
 private fun Content(
-    modifier: Modifier = Modifier,
-    items: LazyPagingItems<UserModel>,
+   modifier: Modifier = Modifier,
+   items: LazyPagingItems<UserModel>,
 ) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Button(onClick = { items.refresh() }) {
-            Text(text = "refresh")
-        }
+   Column(
+      modifier = modifier.fillMaxSize(),
+      horizontalAlignment = Alignment.CenterHorizontally,
+   ) {
+      Button(onClick = { items.refresh() }) {
+         Text(text = "refresh")
+      }
 
-        FPagingLazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            items = items,
-            itemKey = items.itemKey { it.id },
-            itemContentType = items.itemContentType(),
-        ) { _, item ->
-            Card(modifier = Modifier.padding(10.dp)) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = item.id)
-                    Text(text = item.name)
-                }
+      FPagingLazyColumn(
+         modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+         items = items,
+         itemKey = items.itemKey { it.id },
+         itemContentType = items.itemContentType(),
+      ) { _, item ->
+         Card(modifier = Modifier.padding(10.dp)) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+               Text(text = item.id)
+               Text(text = item.name)
             }
-        }
-    }
+         }
+      }
+   }
 }

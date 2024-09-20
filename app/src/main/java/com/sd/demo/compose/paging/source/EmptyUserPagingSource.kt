@@ -5,8 +5,8 @@ import com.sd.lib.compose.paging.FIntPagingSource
 import kotlinx.coroutines.delay
 
 class EmptyUserPagingSource : FIntPagingSource<UserModel>() {
-    override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<UserModel> {
-        delay(1_000)
-        return emptyList()
-    }
+   override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<UserModel> {
+      delay(1_000)
+      return emptyList()
+   }
 }

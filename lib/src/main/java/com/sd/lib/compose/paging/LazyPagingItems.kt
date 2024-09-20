@@ -11,7 +11,7 @@ import androidx.paging.compose.LazyPagingItems
  * 是否刷新中
  */
 fun LazyPagingItems<*>.fIsRefreshing(): Boolean {
-    return loadState.refresh == LoadState.Loading
+   return loadState.refresh == LoadState.Loading
 }
 
 /**
@@ -19,20 +19,20 @@ fun LazyPagingItems<*>.fIsRefreshing(): Boolean {
  */
 @Composable
 inline fun LazyPagingItems<*>.FUIStateRefresh(
-    /** 加载中 */
-    stateLoading: @Composable () -> Unit = {},
-    /** 加载错误 */
-    stateError: @Composable (Throwable) -> Unit = {},
-    /** 无数据 */
-    stateNoData: @Composable () -> Unit = {},
+   /** 加载中 */
+   stateLoading: @Composable () -> Unit = {},
+   /** 加载错误 */
+   stateError: @Composable (Throwable) -> Unit = {},
+   /** 无数据 */
+   stateNoData: @Composable () -> Unit = {},
 ) {
-    if (itemCount == 0) {
-        when (val loadState = loadState.refresh) {
-            is LoadState.Loading -> stateLoading()
-            is LoadState.Error -> stateError(loadState.error)
-            is LoadState.NotLoading -> stateNoData()
-        }
-    }
+   if (itemCount == 0) {
+      when (val loadState = loadState.refresh) {
+         is LoadState.Loading -> stateLoading()
+         is LoadState.Error -> stateError(loadState.error)
+         is LoadState.NotLoading -> stateNoData()
+      }
+   }
 }
 
 //-------------------- append --------------------
@@ -41,7 +41,7 @@ inline fun LazyPagingItems<*>.FUIStateRefresh(
  * 是否显示[CombinedLoadStates.append]状态
  */
 fun LazyPagingItems<*>.fShowUIStateAppend(): Boolean {
-    return itemCount > 0
+   return itemCount > 0
 }
 
 /**
@@ -49,22 +49,22 @@ fun LazyPagingItems<*>.fShowUIStateAppend(): Boolean {
  */
 @Composable
 inline fun LazyPagingItems<*>.FUIStateAppend(
-    /** 加载中 */
-    stateLoading: @Composable () -> Unit = {},
-    /** 加载错误 */
-    stateError: @Composable (Throwable) -> Unit = {},
-    /** 没有更多数据 */
-    stateNoMoreData: @Composable () -> Unit = {},
+   /** 加载中 */
+   stateLoading: @Composable () -> Unit = {},
+   /** 加载错误 */
+   stateError: @Composable (Throwable) -> Unit = {},
+   /** 没有更多数据 */
+   stateNoMoreData: @Composable () -> Unit = {},
 ) {
-    when (val loadState = loadState.append) {
-        is LoadState.Loading -> stateLoading()
-        is LoadState.Error -> stateError(loadState.error)
-        is LoadState.NotLoading -> {
-            if (loadState.endOfPaginationReached) {
-                stateNoMoreData()
-            }
-        }
-    }
+   when (val loadState = loadState.append) {
+      is LoadState.Loading -> stateLoading()
+      is LoadState.Error -> stateError(loadState.error)
+      is LoadState.NotLoading -> {
+         if (loadState.endOfPaginationReached) {
+            stateNoMoreData()
+         }
+      }
+   }
 }
 
 //-------------------- prepend --------------------
@@ -73,9 +73,9 @@ inline fun LazyPagingItems<*>.FUIStateAppend(
  * 是否显示[CombinedLoadStates.prepend]状态
  */
 fun LazyPagingItems<*>.fShowUIStatePrepend(): Boolean {
-    if (itemCount <= 0) return false
-    if (fIsRefreshing()) return false
-    return !loadState.prepend.endOfPaginationReached
+   if (itemCount <= 0) return false
+   if (fIsRefreshing()) return false
+   return !loadState.prepend.endOfPaginationReached
 }
 
 /**
@@ -83,14 +83,14 @@ fun LazyPagingItems<*>.fShowUIStatePrepend(): Boolean {
  */
 @Composable
 inline fun LazyPagingItems<*>.FUIStatePrepend(
-    /** 加载中 */
-    stateLoading: @Composable () -> Unit = {},
-    /** 加载错误 */
-    stateError: @Composable (Throwable) -> Unit = {},
+   /** 加载中 */
+   stateLoading: @Composable () -> Unit = {},
+   /** 加载错误 */
+   stateError: @Composable (Throwable) -> Unit = {},
 ) {
-    when (val loadState = loadState.prepend) {
-        is LoadState.Loading -> stateLoading()
-        is LoadState.Error -> stateError(loadState.error)
-        else -> {}
-    }
+   when (val loadState = loadState.prepend) {
+      is LoadState.Loading -> stateLoading()
+      is LoadState.Error -> stateError(loadState.error)
+      else -> {}
+   }
 }

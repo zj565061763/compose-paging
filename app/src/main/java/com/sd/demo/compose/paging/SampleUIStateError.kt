@@ -25,47 +25,47 @@ import kotlinx.coroutines.flow.Flow
 
 class SampleUIStateError : ComponentActivity() {
 
-    private val _flow: Flow<PagingData<UserModel>> = Pager(
-        config = PagingConfig(pageSize = 20)
-    ) { ErrorUserPagingSource() }.flow.cachedIn(lifecycleScope)
+   private val _flow: Flow<PagingData<UserModel>> = Pager(
+      config = PagingConfig(pageSize = 20)
+   ) { ErrorUserPagingSource() }.flow.cachedIn(lifecycleScope)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                val items = _flow.collectAsLazyPagingItems()
-                Content(items = items)
-            }
-        }
-    }
+   override fun onCreate(savedInstanceState: Bundle?) {
+      super.onCreate(savedInstanceState)
+      setContent {
+         AppTheme {
+            val items = _flow.collectAsLazyPagingItems()
+            Content(items = items)
+         }
+      }
+   }
 }
 
 @Composable
 private fun Content(
-    modifier: Modifier = Modifier,
-    items: LazyPagingItems<UserModel>,
+   modifier: Modifier = Modifier,
+   items: LazyPagingItems<UserModel>,
 ) {
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center,
-    ) {
-        FPagingLazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            items = items,
-        ) { _, _ ->
+   Box(
+      modifier = modifier,
+      contentAlignment = Alignment.Center,
+   ) {
+      FPagingLazyColumn(
+         modifier = Modifier.fillMaxSize(),
+         items = items,
+      ) { _, _ ->
 
-        }
+      }
 
-        items.FUIStateRefresh(
-            stateLoading = {
-                CircularProgressIndicator()
-            },
-            stateError = {
-                Text(text = it.toString())
-            },
-            stateNoData = {
-                Text(text = "暂无数据")
-            }
-        )
-    }
+      items.FUIStateRefresh(
+         stateLoading = {
+            CircularProgressIndicator()
+         },
+         stateError = {
+            Text(text = it.toString())
+         },
+         stateNoData = {
+            Text(text = "暂无数据")
+         }
+      )
+   }
 }
