@@ -23,9 +23,9 @@
         </activity>
 
         <activity android:name=".SampleActivity" />
-        <activity android:name=".SampleUpdateActivity" />
-        <activity android:name=".SampleUIStateError" />
         <activity android:name=".SampleUIStateNoData" />
+        <activity android:name=".SampleUIStateError" />
+        <activity android:name=".SampleUpdateActivity" />
 
     </application>
 

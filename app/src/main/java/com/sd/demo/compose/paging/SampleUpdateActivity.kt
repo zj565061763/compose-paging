@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -15,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
-import androidx.paging.Pager
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.compose.LazyPagingItems
@@ -23,19 +23,20 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import androidx.paging.map
-import com.sd.demo.compose.paging.source.SinglePageUserPagingSource
 import com.sd.demo.compose.paging.theme.AppTheme
-import com.sd.lib.compose.paging.FPagingLazyColumn
-import com.sd.lib.compose.paging.fPagingConfig
+import com.sd.lib.compose.paging.FIntPagingSource
+import com.sd.lib.compose.paging.fPagerFlow
+import com.sd.lib.compose.paging.fPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import java.util.UUID
 
 class SampleUpdateActivity : ComponentActivity() {
-   private val _flow = Pager(fPagingConfig()) { SinglePageUserPagingSource() }
-      .flow
+
+   private val _flow = fPagerFlow { SinglePageUserPagingSource() }
       .cachedIn(lifecycleScope)
 
    private val _updater = _flow.updater { it.id }
@@ -115,23 +116,41 @@ private fun Content(
          Text(text = "refresh")
       }
 
-      FPagingLazyColumn(
+      LazyColumn(
          modifier = Modifier
             .fillMaxWidth()
             .weight(1f),
-         items = items,
-         itemKey = items.itemKey { it.id },
-         itemContentType = items.itemContentType(),
-      ) { _, item ->
-         Card(
-            modifier = Modifier.padding(10.dp),
-            onClick = { onClickItem(item) },
-         ) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-               Text(text = item.id)
-               Text(text = item.name)
+      ) {
+         fPagingItems(
+            items = items,
+            itemKey = items.itemKey { it.id },
+            itemContentType = items.itemContentType(),
+         ) { _, item ->
+            Card(
+               modifier = Modifier.padding(10.dp),
+               onClick = { onClickItem(item) },
+            ) {
+               Column(modifier = Modifier.fillMaxWidth()) {
+                  Text(text = item.id)
+                  Text(text = item.name)
+               }
             }
          }
+      }
+   }
+}
+
+private class SinglePageUserPagingSource : FIntPagingSource<UserModel>() {
+   override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<UserModel> {
+      return if (key == initialKey) {
+         List(20) { index ->
+            UserModel(
+               id = index.toString(),
+               name = UUID.randomUUID().toString(),
+            )
+         }
+      } else {
+         emptyList()
       }
    }
 }

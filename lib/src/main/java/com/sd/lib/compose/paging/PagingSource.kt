@@ -9,7 +9,7 @@ import kotlinx.coroutines.CancellationException
  */
 abstract class FIntPagingSource<Value : Any>(
    /** 起始页码 */
-   private val initialKey: Int = 1,
+   val initialKey: Int = 1,
 ) : FPagingSource<Int, Value>() {
 
    override suspend fun loadImpl(params: LoadParams<Int>): LoadResult<Int, Value> {

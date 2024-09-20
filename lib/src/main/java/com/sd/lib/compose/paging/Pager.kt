@@ -1,8 +1,24 @@
 package com.sd.lib.compose.paging
 
+import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingConfig.Companion.MAX_SIZE_UNBOUNDED
+import androidx.paging.PagingData
+import androidx.paging.PagingSource
 import androidx.paging.PagingSource.LoadResult.Page.Companion.COUNT_UNDEFINED
+import kotlinx.coroutines.flow.Flow
+
+fun <Key : Any, Value : Any> fPagerFlow(
+   config: PagingConfig = fPagingConfig(),
+   initialKey: Key? = null,
+   pagingSourceFactory: () -> PagingSource<Key, Value>,
+): Flow<PagingData<Value>> {
+   return Pager(
+      config = config,
+      initialKey = initialKey,
+      pagingSourceFactory = pagingSourceFactory,
+   ).flow
+}
 
 fun fPagingConfig(
    pageSize: Int = 20,
