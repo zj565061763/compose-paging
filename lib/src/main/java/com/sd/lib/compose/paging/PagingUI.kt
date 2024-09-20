@@ -82,9 +82,9 @@ private fun StateBox(
 ) {
    Box(
       modifier = modifier
-          .fillMaxWidth()
-          .heightIn(48.dp)
-          .padding(5.dp),
+         .fillMaxWidth()
+         .heightIn(48.dp)
+         .padding(5.dp),
       contentAlignment = Alignment.Center,
       content = content,
    )
@@ -113,8 +113,8 @@ private fun StateError(
       color = MaterialTheme.colorScheme.onSurface.copy(0.5f),
       textAlign = TextAlign.Center,
       modifier = modifier
-          .clickable { items.retry() }
-          .defaultMinSize(60.dp, 30.dp)
-          .padding(horizontal = 10.dp)
+         .clickable { items.retry() }
+         .defaultMinSize(60.dp, 30.dp)
+         .padding(horizontal = 10.dp)
    )
 }
