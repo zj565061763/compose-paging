@@ -137,7 +137,6 @@ private class FPagingModifier<T : Any>(
    private val _updateFlow: MutableStateFlow<Map<PagingData<T>, Map<Any, T>>> = MutableStateFlow(mutableMapOf())
 
    val flow: Flow<PagingData<T>> = flow
-      .onEach { _currentPagingData = it }
       .combine(_removeFlow) { data, remove ->
          remove[data]?.let { holder ->
             data.filter { item ->
@@ -153,6 +152,11 @@ private class FPagingModifier<T : Any>(
                holder[id] ?: item
             }
          } ?: data
+      }
+      .onEach {
+         if (_currentPagingData != it) {
+            _currentPagingData = it
+         }
       }
 
    fun update(item: T) {
