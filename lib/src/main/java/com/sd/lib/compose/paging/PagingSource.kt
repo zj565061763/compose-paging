@@ -45,7 +45,7 @@ abstract class FPagingSource<Key : Any, Value : Any> : PagingSource<Key, Value>(
          loadImpl(params)
       }.getOrElse { error ->
          if (error is CancellationException) throw error
-         LoadResult.Error(onError(error))
+         LoadResult.Error(onLoadError(error))
       }
    }
 
@@ -59,7 +59,7 @@ abstract class FPagingSource<Key : Any, Value : Any> : PagingSource<Key, Value>(
    protected abstract suspend fun loadImpl(params: LoadParams<Key>): LoadResult<Key, Value>
 
    /**
-    * 错误回调，返回错误对象
+    * 加载错误回调，返回错误对象
     */
-   protected open fun onError(error: Throwable): Throwable = error
+   protected open fun onLoadError(error: Throwable): Throwable = error
 }
