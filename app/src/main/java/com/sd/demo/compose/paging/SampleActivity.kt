@@ -83,7 +83,7 @@ private class UserPagingSource : FIntPagingSource<UserModel>() {
    private var _hasLoadError = false
 
    override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<UserModel> {
-      logMsg { "load key:$key params:$params $this" }
+      logMsg { "load key:$key $this" }
       delay(1_000)
 
       if (key >= _maxPage) {
