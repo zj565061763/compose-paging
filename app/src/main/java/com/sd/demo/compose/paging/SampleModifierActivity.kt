@@ -141,7 +141,7 @@ private class FPagingModifier<T : Any>(
          _currentPagingData = it
       }
       .combine(_removeFlow) { data, remove ->
-         remove[data]?.let { holder ->
+         remove[_currentPagingData]?.let { holder ->
             data.filter { item ->
                val id = getID(item)
                !holder.contains(id)
@@ -149,7 +149,7 @@ private class FPagingModifier<T : Any>(
          } ?: data
       }
       .combine(_updateFlow) { data, update ->
-         update[data]?.let { holder ->
+         update[_currentPagingData]?.let { holder ->
             data.map { item ->
                val id = getID(item)
                holder[id] ?: item
