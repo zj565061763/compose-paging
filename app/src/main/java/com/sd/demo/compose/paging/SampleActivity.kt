@@ -8,11 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
@@ -22,8 +22,10 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.sd.demo.compose.paging.theme.AppTheme
 import com.sd.lib.compose.paging.FIntPagingSource
+import com.sd.lib.compose.paging.fIsRefreshing
 import com.sd.lib.compose.paging.fPagerFlow
 import com.sd.lib.compose.paging.fPagingAppend
+import com.sd.lib.compose.paging.fPagingConfig
 import com.sd.lib.compose.paging.fPagingItems
 import kotlinx.coroutines.delay
 import java.io.IOException
@@ -31,8 +33,9 @@ import java.util.UUID
 
 class SampleActivity : ComponentActivity() {
 
-   private val _flow = fPagerFlow { UserPagingSource() }
-      .cachedIn(lifecycleScope)
+   private val _flow = fPagerFlow(
+      config = fPagingConfig(prefetchDistance = 1)
+   ) { UserPagingSource() }.cachedIn(lifecycleScope)
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -45,24 +48,18 @@ class SampleActivity : ComponentActivity() {
    }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Content(
    modifier: Modifier = Modifier,
    items: LazyPagingItems<UserModel>,
 ) {
-   Column(
+   PullToRefreshBox(
+      isRefreshing = items.fIsRefreshing(),
+      onRefresh = { items.refresh() },
       modifier = modifier.fillMaxSize(),
-      horizontalAlignment = Alignment.CenterHorizontally,
    ) {
-      Button(onClick = { items.refresh() }) {
-         Text(text = "refresh")
-      }
-
-      LazyColumn(
-         modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f),
-      ) {
+      LazyColumn(modifier = Modifier.fillMaxSize()) {
          fPagingItems(
             items = items,
             itemKey = items.itemKey { it.id },

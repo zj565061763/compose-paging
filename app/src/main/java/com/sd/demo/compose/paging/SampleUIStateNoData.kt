@@ -51,9 +51,7 @@ private fun Content(
       modifier = modifier.fillMaxSize(),
       contentAlignment = Alignment.Center,
    ) {
-      LazyColumn(
-         modifier = modifier.fillMaxSize()
-      ) {
+      LazyColumn(modifier = modifier.fillMaxSize()) {
          fPagingItems(items) { _, item ->
             Text(item.toString())
          }
