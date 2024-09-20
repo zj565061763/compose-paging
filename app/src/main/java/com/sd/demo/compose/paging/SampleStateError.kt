@@ -22,10 +22,11 @@ import com.sd.lib.compose.paging.fIsRefreshing
 import com.sd.lib.compose.paging.fPagerFlow
 import com.sd.lib.compose.paging.fPagingItems
 import kotlinx.coroutines.delay
+import java.io.IOException
 
-class SampleUIStateNoData : ComponentActivity() {
+class SampleStateError : ComponentActivity() {
 
-   private val _flow = fPagerFlow { NoDataPagingSource() }
+   private val _flow = fPagerFlow { ErrorPagingSource() }
       .cachedIn(lifecycleScope)
 
    override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,16 +59,16 @@ private fun Content(
       }
 
       items.FUIStateRefresh(
-         stateNoData = {
-            Text("暂无数据")
-         }
+         stateError = {
+            Text("加载失败:$it")
+         },
       )
    }
 }
 
-private class NoDataPagingSource : FIntPagingSource<UserModel>() {
+private class ErrorPagingSource : FIntPagingSource<UserModel>() {
    override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<UserModel> {
       delay(1_000)
-      return emptyList()
+      throw IOException("load error")
    }
 }

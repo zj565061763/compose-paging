@@ -37,7 +37,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import java.util.UUID
 
-class SampleUpdateActivity : ComponentActivity() {
+class SampleModifierActivity : ComponentActivity() {
 
    private val _modifier = fPagerFlow { UserPagingSource() }
       .cachedIn(lifecycleScope)

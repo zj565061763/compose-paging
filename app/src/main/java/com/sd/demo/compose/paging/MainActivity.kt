@@ -27,9 +27,9 @@ class MainActivity : ComponentActivity() {
             Content(
                listActivity = listOf(
                   SampleActivity::class.java,
-                  SampleUIStateNoData::class.java,
-                  SampleUIStateError::class.java,
-                  SampleUpdateActivity::class.java,
+                  SampleStateNoData::class.java,
+                  SampleStateError::class.java,
+                  SampleModifierActivity::class.java,
                ),
                onClickActivity = {
                   startActivity(Intent(this, it))
