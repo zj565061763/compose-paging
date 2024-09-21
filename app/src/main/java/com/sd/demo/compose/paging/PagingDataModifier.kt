@@ -7,9 +7,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
@@ -36,14 +35,9 @@ class FPagingDataModifier<T : Any>(
    private val _updateFlow = MutableStateFlow(false)
 
    /** 数据流 */
-   val flow = callbackFlow {
-      flow.collectLatest { source ->
-         flowOf(source)
-            .modify()
-            .collectLatest {
-               send(it)
-            }
-      }
+   @OptIn(ExperimentalCoroutinesApi::class)
+   val flow = flow.flatMapLatest {
+      flowOf(it).modify()
    }
 
    /**
