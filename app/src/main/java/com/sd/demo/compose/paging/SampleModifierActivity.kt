@@ -114,11 +114,13 @@ private fun Content(
 private class UserPagingSource : FIntPagingSource<UserModel>() {
    override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<UserModel> {
       delay(1_000)
-      return List(20) { index ->
-         UserModel(
-            id = UUID.randomUUID().toString(),
-            name = index.toString(),
-         )
-      }
+      return if (key == initialKey) {
+         List(5) { index ->
+            UserModel(
+               id = UUID.randomUUID().toString(),
+               name = (index + 1).toString(),
+            )
+         }
+      } else emptyList()
    }
 }
