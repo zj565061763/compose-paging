@@ -7,7 +7,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
@@ -33,30 +36,15 @@ class FPagingDataModifier<T : Any>(
    private val _updateFlow = MutableStateFlow(false)
 
    /** 数据流 */
-   val flow: Flow<PagingData<T>> = flow
-      .flowOn(Dispatchers.Main)
-      .onEach {
-         _realPagingData = it
-         _removeHolder.clear()
-         _updateHolder.clear()
-      }
-      .combine(_removeFlow) { data, _ ->
-         _removeHolder[_realPagingData]?.let { holder ->
-            data.filter { item ->
-               val id = getID(item)
-               !holder.contains(id)
+   val flow = callbackFlow {
+      flow.collectLatest { source ->
+         flowOf(source)
+            .modify()
+            .collectLatest {
+               send(it)
             }
-         } ?: data
       }
-      .combine(_updateFlow) { data, _ ->
-         _updateHolder[_realPagingData]?.let { holder ->
-            data.map { item ->
-               val id = getID(item)
-               holder[id] ?: item
-            }
-         } ?: data
-      }
-      .flowOn(_dispatcher)
+   }
 
    /**
     * 移除ID为[id]的项
@@ -85,5 +73,27 @@ class FPagingDataModifier<T : Any>(
             _updateFlow.value = !_updateFlow.value
          }
       }
+   }
+
+   private fun Flow<PagingData<T>>.modify(): Flow<PagingData<T>> {
+      return onEach {
+         _realPagingData = it
+         _removeHolder.clear()
+         _updateHolder.clear()
+      }.combine(_removeFlow) { data, _ ->
+         _removeHolder[_realPagingData]?.let { holder ->
+            data.filter { item ->
+               val id = getID(item)
+               !holder.contains(id)
+            }
+         } ?: data
+      }.combine(_updateFlow) { data, _ ->
+         _updateHolder[_realPagingData]?.let { holder ->
+            data.map { item ->
+               val id = getID(item)
+               holder[id] ?: item
+            }
+         } ?: data
+      }.flowOn(_dispatcher)
    }
 }
