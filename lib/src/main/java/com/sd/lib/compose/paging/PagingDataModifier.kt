@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 
 fun <T : Any> Flow<PagingData<T>>.modifier(
@@ -37,7 +36,7 @@ class FPagingDataModifier<T : Any>(
    /** 数据流 */
    @OptIn(ExperimentalCoroutinesApi::class)
    val flow = flow.flatMapLatest {
-      flowOf(it).modify()
+      init(it).modify()
    }
 
    /**
@@ -69,12 +68,17 @@ class FPagingDataModifier<T : Any>(
       }
    }
 
-   private fun Flow<PagingData<T>>.modify(): Flow<PagingData<T>> {
-      return onEach {
-         _realPagingData = it
+   private suspend fun init(data: PagingData<T>): Flow<PagingData<T>> {
+      return withContext(_dispatcher) {
+         _realPagingData = data
          _removeHolder.clear()
          _updateHolder.clear()
-      }.combine(_removeFlow) { data, _ ->
+         flowOf(data)
+      }
+   }
+
+   private fun Flow<PagingData<T>>.modify(): Flow<PagingData<T>> {
+      return combine(_removeFlow) { data, _ ->
          _removeHolder[_realPagingData]?.let { holder ->
             data.filter { item ->
                val id = getID(item)
