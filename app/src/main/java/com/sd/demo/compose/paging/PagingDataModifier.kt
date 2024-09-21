@@ -49,7 +49,7 @@ class FPagingDataModifier<T : Any>(
          val holder = _removeHolder.getOrPut(key) { mutableSetOf() }
 
          if (holder.add(id)) {
-            _removeFlow.value = !_removeFlow.value
+            _removeFlow.apply { value = !value }
          }
       }
    }
@@ -64,7 +64,7 @@ class FPagingDataModifier<T : Any>(
 
          val previous = holder.put(getID(item), item)
          if (previous != item) {
-            _updateFlow.value = !_updateFlow.value
+            _updateFlow.apply { value = !value }
          }
       }
    }
