@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lib_compose_paging_state_append_load_failure">Load failed, click to retry</string>
+    <string name="lib_compose_paging_state_append_no_more_data">There is no more data</string>
+
+    <string name="lib_compose_paging_state_prepend_load_failure">Load failed, click to retry</string>
+</resources>
