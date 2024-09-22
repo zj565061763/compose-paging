@@ -10,13 +10,22 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
 fun <T : Any> Flow<PagingData<T>>.modifier(
+   onEach: FPagingDataModifier<T>.(PagingData<T>) -> Unit = {
+      clearRemove()
+      clearUpdate()
+   },
    getID: (T) -> Any,
 ): FPagingDataModifier<T> {
-   return FPagingDataModifier(this, getID)
+   return FPagingDataModifier(
+      flow = this,
+      onEach = onEach,
+      getID = getID,
+   )
 }
 
-class FPagingDataModifier<T : Any>(
+class FPagingDataModifier<T : Any> internal constructor(
    flow: Flow<PagingData<T>>,
+   private val onEach: FPagingDataModifier<T>.(PagingData<T>) -> Unit,
    private val getID: (T) -> Any,
 ) {
    private val _removeFlow = MutableStateFlow<Set<Any>>(emptySet())
@@ -24,10 +33,8 @@ class FPagingDataModifier<T : Any>(
 
    /** 数据流 */
    val flow = flow
-      .onEach {
-         _removeFlow.update { emptySet() }
-         _updateFlow.update { emptyMap() }
-      }.modify()
+      .onEach { onEach(it) }
+      .modify()
 
    /**
     * 移除ID为[id]的项
@@ -43,6 +50,13 @@ class FPagingDataModifier<T : Any>(
    }
 
    /**
+    * 清空所有删除的项
+    */
+   fun clearRemove() {
+      _removeFlow.update { emptySet() }
+   }
+
+   /**
     * 更新项
     */
    fun update(item: T) {
@@ -54,6 +68,13 @@ class FPagingDataModifier<T : Any>(
             value + (id to item)
          }
       }
+   }
+
+   /**
+    * 清空所有更新的项
+    */
+   fun clearUpdate() {
+      _updateFlow.update { emptyMap() }
    }
 
    private fun Flow<PagingData<T>>.modify(): Flow<PagingData<T>> {
