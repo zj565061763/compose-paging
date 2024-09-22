@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
@@ -32,11 +33,10 @@ import com.sd.lib.compose.paging.fIsRefreshing
 import com.sd.lib.compose.paging.fPagerFlow
 import com.sd.lib.compose.paging.fPagingItems
 import kotlinx.coroutines.delay
-import java.util.UUID
 
 class SampleModifierActivity : ComponentActivity() {
 
-   private val _modifier = fPagerFlow { UserPagingSource() }
+   private val _modifier = fPagerFlow { ModifyModelPagingSource() }
       .cachedIn(lifecycleScope)
       .modifier { it.id }
 
@@ -50,7 +50,7 @@ class SampleModifierActivity : ComponentActivity() {
             Content(
                items = items,
                onClickItem = { item ->
-                  _modifier.update(item.copy(name = "updated"))
+                  _modifier.update(item.copy(count = item.count + 1))
                },
                onLongClickItem = { item ->
                   _modifier.remove(item.id)
@@ -65,9 +65,9 @@ class SampleModifierActivity : ComponentActivity() {
 @Composable
 private fun Content(
    modifier: Modifier = Modifier,
-   items: LazyPagingItems<UserModel>,
-   onClickItem: (UserModel) -> Unit,
-   onLongClickItem: (UserModel) -> Unit,
+   items: LazyPagingItems<ModifyModel>,
+   onClickItem: (ModifyModel) -> Unit,
+   onLongClickItem: (ModifyModel) -> Unit,
 ) {
    PullToRefreshBox(
       isRefreshing = items.fIsRefreshing(),
@@ -93,26 +93,34 @@ private fun Content(
                      onClick = { onClickItem(item) },
                      onLongClick = { onLongClickItem(item) },
                   )
-                  .padding(5.dp)
+                  .padding(5.dp),
             ) {
-               Text(text = item.id)
-               Text(text = item.name)
+               Text("id: ${item.id}")
+               Text(
+                  text = "count: ${item.count}",
+                  modifier = Modifier.align(Alignment.CenterHorizontally),
+               )
             }
          }
       }
    }
 }
 
-private class UserPagingSource : FIntPagingSource<UserModel>() {
-   override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<UserModel> {
+private class ModifyModelPagingSource : FIntPagingSource<ModifyModel>() {
+   override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<ModifyModel> {
       delay(1_000)
       return if (key == initialKey) {
          List(5) { index ->
-            UserModel(
-               id = UUID.randomUUID().toString(),
-               name = (index + 1).toString(),
+            ModifyModel(
+               id = (index + 1).toString(),
+               count = 0,
             )
          }
       } else emptyList()
    }
 }
+
+private data class ModifyModel(
+   val id: String,
+   val count: Int,
+)
