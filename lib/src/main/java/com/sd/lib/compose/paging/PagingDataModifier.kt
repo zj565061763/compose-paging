@@ -65,14 +65,14 @@ class FPagingDataModifier<T : Any>(
    }
 
    private fun Flow<PagingData<T>>.modify(): Flow<PagingData<T>> {
-      return combine(_removeFlow) { data, remove ->
-         remove[_realPagingData]?.let { holder ->
+      return combine(_removeFlow) { data, map ->
+         map[_realPagingData]?.let { holder ->
             data.filter { item ->
                !holder.contains(getID(item))
             }
          } ?: data
-      }.combine(_updateFlow) { data, update ->
-         update[_realPagingData]?.let { holder ->
+      }.combine(_updateFlow) { data, map ->
+         map[_realPagingData]?.let { holder ->
             data.map { item ->
                holder[getID(item)] ?: item
             }
