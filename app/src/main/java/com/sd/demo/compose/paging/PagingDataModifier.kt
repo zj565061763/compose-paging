@@ -38,6 +38,7 @@ class FPagingDataModifier<T : Any>(
       _removeFlow.update { value ->
          val key = _realPagingData ?: return
          val holder = value[key] ?: emptySet()
+
          if (holder.contains(id)) {
             value
          } else {
@@ -50,10 +51,11 @@ class FPagingDataModifier<T : Any>(
     * 更新项
     */
    fun update(item: T) {
-      val id = getID(item)
       _updateFlow.update { value ->
          val key = _realPagingData ?: return
          val holder = value[key] ?: emptyMap()
+
+         val id = getID(item)
          if (holder[id] == item) {
             value
          } else {
