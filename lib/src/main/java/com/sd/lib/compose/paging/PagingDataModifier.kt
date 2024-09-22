@@ -58,13 +58,15 @@ class FPagingDataModifier<T : Any>(
 
    private fun Flow<PagingData<T>>.modify(): Flow<PagingData<T>> {
       return combine(_removeFlow) { data, holder ->
-         data.takeIf { holder.isEmpty() } ?: data.filter { item ->
-            !holder.contains(getID(item))
-         }
+         data.takeIf { holder.isEmpty() }
+            ?: data.filter { item ->
+               !holder.contains(getID(item))
+            }
       }.combine(_updateFlow) { data, holder ->
-         data.takeIf { holder.isEmpty() } ?: data.map { item ->
-            holder[getID(item)] ?: item
-         }
+         data.takeIf { holder.isEmpty() }
+            ?: data.map { item ->
+               holder[getID(item)] ?: item
+            }
       }
    }
 }
