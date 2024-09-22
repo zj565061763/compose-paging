@@ -1,4 +1,4 @@
-package com.sd.demo.compose.paging
+package com.sd.lib.compose.paging
 
 import androidx.paging.PagingData
 import androidx.paging.filter
