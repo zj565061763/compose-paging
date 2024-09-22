@@ -18,7 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
@@ -33,7 +32,6 @@ import com.sd.lib.compose.paging.fIsRefreshing
 import com.sd.lib.compose.paging.fPagerFlow
 import com.sd.lib.compose.paging.fPagingItems
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.util.UUID
 
 class SampleModifierActivity : ComponentActivity() {
@@ -48,19 +46,14 @@ class SampleModifierActivity : ComponentActivity() {
       super.onCreate(savedInstanceState)
       setContent {
          AppTheme {
-            val coroutineScope = rememberCoroutineScope()
             val items = _flow.collectAsLazyPagingItems()
             Content(
                items = items,
                onClickItem = { item ->
-                  coroutineScope.launch {
-                     _modifier.update(item.copy(name = "updated"))
-                  }
+                  _modifier.update(item.copy(name = "updated"))
                },
                onLongClickItem = { item ->
-                  coroutineScope.launch {
-                     _modifier.remove(item.id)
-                  }
+                  _modifier.remove(item.id)
                }
             )
          }
