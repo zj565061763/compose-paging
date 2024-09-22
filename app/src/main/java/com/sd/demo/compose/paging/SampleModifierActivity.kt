@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -33,14 +34,18 @@ import com.sd.lib.compose.paging.fIsRefreshing
 import com.sd.lib.compose.paging.fPagerFlow
 import com.sd.lib.compose.paging.fPagingItems
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 
 class SampleModifierActivity : ComponentActivity() {
 
-   private val _modifier = fPagerFlow { ModifyModelPagingSource() }
-      .cachedIn(lifecycleScope)
-      .modifier { it.id }
+   /** 数据修改对象 */
+   private val _modifier: FPagingDataModifier<ModifyModel> =
+      fPagerFlow { ModifyModelPagingSource() }
+         .cachedIn(lifecycleScope)
+         .modifier { it.id }
 
-   private val _flow = _modifier.flow
+   /** 数据流 */
+   private val _flow: Flow<PagingData<ModifyModel>> = _modifier.flow
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -50,9 +55,11 @@ class SampleModifierActivity : ComponentActivity() {
             Content(
                items = items,
                onClickItem = { item ->
+                  // 点击修改Item
                   _modifier.update(item.copy(count = item.count + 1))
                },
                onLongClickItem = { item ->
+                  // 长按删除Item
                   _modifier.remove(item.id)
                }
             )
@@ -108,7 +115,7 @@ private fun Content(
 
 private class ModifyModelPagingSource : FIntPagingSource<ModifyModel>() {
    override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<ModifyModel> {
-      delay(1_000)
+      delay(500)
       return if (key == initialKey) {
          List(5) { index ->
             ModifyModel(
