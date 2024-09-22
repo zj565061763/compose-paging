@@ -19,15 +19,13 @@ class FPagingDataModifier<T : Any>(
    flow: Flow<PagingData<T>>,
    private val getID: (T) -> Any,
 ) {
-   private var _realPagingData: PagingData<T>? = null
-   private val _removeFlow = MutableStateFlow<Map<PagingData<T>, Set<Any>>>(emptyMap())
-   private val _updateFlow = MutableStateFlow<Map<PagingData<T>, Map<Any, T>>>(emptyMap())
+   private val _removeFlow = MutableStateFlow<Set<Any>>(emptySet())
+   private val _updateFlow = MutableStateFlow<Map<Any, T>>(emptyMap())
 
    /** 数据流 */
    val flow = flow
       .onEach {
-         _realPagingData = it
-         _removeFlow.update { emptyMap() }
+         _removeFlow.update { emptySet() }
          _updateFlow.update { emptyMap() }
       }.modify()
 
@@ -36,13 +34,10 @@ class FPagingDataModifier<T : Any>(
     */
    fun remove(id: Any) {
       _removeFlow.update { value ->
-         val key = _realPagingData ?: return
-         val holder = value[key] ?: emptySet()
-
-         if (holder.contains(id)) {
+         if (value.contains(id)) {
             value
          } else {
-            value + (key to (holder + id))
+            value + id
          }
       }
    }
@@ -52,31 +47,24 @@ class FPagingDataModifier<T : Any>(
     */
    fun update(item: T) {
       _updateFlow.update { value ->
-         val key = _realPagingData ?: return
-         val holder = value[key] ?: emptyMap()
-
          val id = getID(item)
-         if (holder[id] == item) {
+         if (value[id] == item) {
             value
          } else {
-            value + (key to (holder + (id to item)))
+            value + (id to item)
          }
       }
    }
 
    private fun Flow<PagingData<T>>.modify(): Flow<PagingData<T>> {
-      return combine(_removeFlow) { data, map ->
-         map[_realPagingData]?.let { holder ->
-            data.filter { item ->
-               !holder.contains(getID(item))
-            }
-         } ?: data
-      }.combine(_updateFlow) { data, map ->
-         map[_realPagingData]?.let { holder ->
-            data.map { item ->
-               holder[getID(item)] ?: item
-            }
-         } ?: data
+      return combine(_removeFlow) { data, holder ->
+         data.takeIf { holder.isEmpty() } ?: data.filter { item ->
+            !holder.contains(getID(item))
+         }
+      }.combine(_updateFlow) { data, holder ->
+         data.takeIf { holder.isEmpty() } ?: data.map { item ->
+            holder[getID(item)] ?: item
+         }
       }
    }
 }
