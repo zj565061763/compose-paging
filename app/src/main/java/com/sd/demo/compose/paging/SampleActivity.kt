@@ -32,74 +32,74 @@ import java.util.UUID
 
 class SampleActivity : ComponentActivity() {
 
-   private val _flow = fPagerFlow(prefetchDistance = 1) { SamplePagingSource() }
-      .cachedIn(lifecycleScope)
+  private val _flow = fPagerFlow(prefetchDistance = 1) { SamplePagingSource() }
+    .cachedIn(lifecycleScope)
 
-   override fun onCreate(savedInstanceState: Bundle?) {
-      super.onCreate(savedInstanceState)
-      setContent {
-         AppTheme {
-            val items = _flow.collectAsLazyPagingItems()
-            Content(items = items)
-         }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContent {
+      AppTheme {
+        val items = _flow.collectAsLazyPagingItems()
+        Content(items = items)
       }
-   }
+    }
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Content(
-   modifier: Modifier = Modifier,
-   items: LazyPagingItems<UserModel>,
+  modifier: Modifier = Modifier,
+  items: LazyPagingItems<UserModel>,
 ) {
-   PullToRefreshBox(
-      isRefreshing = items.fIsRefreshing(),
-      onRefresh = { items.refresh() },
-      modifier = modifier.fillMaxSize(),
-   ) {
-      LazyColumn(modifier = Modifier.fillMaxSize()) {
-         fPagingItems(
-            items = items,
-            key = items.itemKey { it.id },
-         ) { _, item ->
-            Card(modifier = Modifier.padding(10.dp)) {
-               Column(modifier = Modifier.fillMaxWidth()) {
-                  Text(text = item.name)
-                  Text(text = item.id)
-               }
-            }
-         }
-
-         fPagingAppend(items)
+  PullToRefreshBox(
+    isRefreshing = items.fIsRefreshing(),
+    onRefresh = { items.refresh() },
+    modifier = modifier.fillMaxSize(),
+  ) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+      fPagingItems(
+        items = items,
+        key = items.itemKey { it.id },
+      ) { _, item ->
+        Card(modifier = Modifier.padding(10.dp)) {
+          Column(modifier = Modifier.fillMaxWidth()) {
+            Text(text = item.name)
+            Text(text = item.id)
+          }
+        }
       }
-   }
+
+      fPagingAppend(items)
+    }
+  }
 }
 
 private class SamplePagingSource : FIntPagingSource<UserModel>() {
-   private val _maxPage = 5
-   private val _errorPage = 3
-   private var _hasLoadError = false
+  private val _maxPage = 5
+  private val _errorPage = 3
+  private var _hasLoadError = false
 
-   override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<UserModel> {
-      logMsg { "load key:$key $this" }
-      delay(1_000)
+  override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<UserModel> {
+    logMsg { "load key:$key $this" }
+    delay(1_000)
 
-      if (key >= _maxPage) {
-         return emptyList()
+    if (key >= _maxPage) {
+      return emptyList()
+    }
+
+    if (key == _errorPage) {
+      if (!_hasLoadError) {
+        _hasLoadError = true
+        throw IOException("load key:$key error")
       }
+    }
 
-      if (key == _errorPage) {
-         if (!_hasLoadError) {
-            _hasLoadError = true
-            throw IOException("load key:$key error")
-         }
-      }
-
-      return List(20) { index ->
-         UserModel(
-            id = UUID.randomUUID().toString(),
-            name = index.toString(),
-         )
-      }
-   }
+    return List(20) { index ->
+      UserModel(
+        id = UUID.randomUUID().toString(),
+        name = index.toString(),
+      )
+    }
+  }
 }

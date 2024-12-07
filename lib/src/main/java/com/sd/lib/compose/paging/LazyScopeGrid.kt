@@ -10,54 +10,54 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 
 fun <T : Any> LazyGridScope.fPagingItems(
-   items: LazyPagingItems<T>,
-   key: ((index: Int) -> Any)? = items.itemKey(),
-   contentType: (index: Int) -> Any? = items.itemContentType(),
-   span: (LazyGridItemSpanScope.(index: Int) -> GridItemSpan)? = null,
-   content: @Composable LazyGridItemScope.(index: Int, item: T) -> Unit,
+  items: LazyPagingItems<T>,
+  key: ((index: Int) -> Any)? = items.itemKey(),
+  contentType: (index: Int) -> Any? = items.itemContentType(),
+  span: (LazyGridItemSpanScope.(index: Int) -> GridItemSpan)? = null,
+  content: @Composable LazyGridItemScope.(index: Int, item: T) -> Unit,
 ) {
-   items(
-      count = items.itemCount,
-      key = key,
-      contentType = contentType,
-      span = span,
-   ) { index ->
-      items[index]?.let { item ->
-         content(index, item)
-      }
-   }
+  items(
+    count = items.itemCount,
+    key = key,
+    contentType = contentType,
+    span = span,
+  ) { index ->
+    items[index]?.let { item ->
+      content(index, item)
+    }
+  }
 }
 
 fun LazyGridScope.fPagingAppend(
-   items: LazyPagingItems<*>,
-   key: Any? = "paging append ui state",
-   contentType: Any? = "paging append ui state",
-   span: (LazyGridItemSpanScope.() -> GridItemSpan)? = { GridItemSpan(maxLineSpan) },
-   content: @Composable LazyGridItemScope.() -> Unit = { FPagingAppend(items) },
+  items: LazyPagingItems<*>,
+  key: Any? = "paging append ui state",
+  contentType: Any? = "paging append ui state",
+  span: (LazyGridItemSpanScope.() -> GridItemSpan)? = { GridItemSpan(maxLineSpan) },
+  content: @Composable LazyGridItemScope.() -> Unit = { FPagingAppend(items) },
 ) {
-   if (items.fShowUIStateAppend()) {
-      item(
-         key = key,
-         contentType = contentType,
-         span = span,
-         content = content,
-      )
-   }
+  if (items.fShowUIStateAppend()) {
+    item(
+      key = key,
+      contentType = contentType,
+      span = span,
+      content = content,
+    )
+  }
 }
 
 fun LazyGridScope.fPagingPrepend(
-   items: LazyPagingItems<*>,
-   key: Any? = "paging prepend ui state",
-   contentType: Any? = "paging prepend ui state",
-   span: (LazyGridItemSpanScope.() -> GridItemSpan)? = { GridItemSpan(maxLineSpan) },
-   content: @Composable LazyGridItemScope.() -> Unit = { FPagingPrepend(items) },
+  items: LazyPagingItems<*>,
+  key: Any? = "paging prepend ui state",
+  contentType: Any? = "paging prepend ui state",
+  span: (LazyGridItemSpanScope.() -> GridItemSpan)? = { GridItemSpan(maxLineSpan) },
+  content: @Composable LazyGridItemScope.() -> Unit = { FPagingPrepend(items) },
 ) {
-   if (items.fShowUIStatePrepend()) {
-      item(
-         key = key,
-         contentType = contentType,
-         span = span,
-         content = content,
-      )
-   }
+  if (items.fShowUIStatePrepend()) {
+    item(
+      key = key,
+      contentType = contentType,
+      span = span,
+      content = content,
+    )
+  }
 }

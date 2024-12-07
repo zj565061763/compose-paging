@@ -40,96 +40,96 @@ import kotlinx.coroutines.flow.Flow
 
 class SampleModifierActivity : ComponentActivity() {
 
-   /** 数据修改对象 */
-   private val _modifier: FPagingDataModifier<ModifyModel> =
-      fPagerFlow { ModifyModelPagingSource() }
-         .cachedIn(lifecycleScope)
-         .modifier { it.id }
+  /** 数据修改对象 */
+  private val _modifier: FPagingDataModifier<ModifyModel> =
+    fPagerFlow { ModifyModelPagingSource() }
+      .cachedIn(lifecycleScope)
+      .modifier { it.id }
 
-   /** 数据流 */
-   private val _flow: Flow<PagingData<ModifyModel>> = _modifier.flow
+  /** 数据流 */
+  private val _flow: Flow<PagingData<ModifyModel>> = _modifier.flow
 
-   override fun onCreate(savedInstanceState: Bundle?) {
-      super.onCreate(savedInstanceState)
-      setContent {
-         AppTheme {
-            val items = _flow.collectAsLazyPagingItems()
-            Content(
-               items = items,
-               onClickItem = { item ->
-                  // 点击修改Item
-                  _modifier.update(item.copy(count = item.count + 1))
-               },
-               onLongClickItem = { item ->
-                  // 长按删除Item
-                  _modifier.remove(item.id)
-               }
-            )
-         }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContent {
+      AppTheme {
+        val items = _flow.collectAsLazyPagingItems()
+        Content(
+          items = items,
+          onClickItem = { item ->
+            // 点击修改Item
+            _modifier.update(item.copy(count = item.count + 1))
+          },
+          onLongClickItem = { item ->
+            // 长按删除Item
+            _modifier.remove(item.id)
+          }
+        )
       }
-   }
+    }
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 private fun Content(
-   modifier: Modifier = Modifier,
-   items: LazyPagingItems<ModifyModel>,
-   onClickItem: (ModifyModel) -> Unit,
-   onLongClickItem: (ModifyModel) -> Unit,
+  modifier: Modifier = Modifier,
+  items: LazyPagingItems<ModifyModel>,
+  onClickItem: (ModifyModel) -> Unit,
+  onLongClickItem: (ModifyModel) -> Unit,
 ) {
-   PullToRefreshBox(
-      isRefreshing = items.fIsRefreshing(),
-      onRefresh = { items.refresh() },
-      modifier = modifier.fillMaxSize(),
-   ) {
-      LazyColumn(
-         modifier = Modifier.fillMaxSize(),
-         contentPadding = PaddingValues(10.dp),
-         verticalArrangement = Arrangement.spacedBy(10.dp),
-      ) {
-         fPagingItems(
-            items = items,
-            key = items.itemKey { it.id },
-            contentType = items.itemContentType(),
-         ) { _, item ->
-            Column(
-               modifier = Modifier
-                  .fillMaxWidth()
-                  .background(MaterialTheme.colorScheme.surfaceContainer)
-                  .animateItem()
-                  .combinedClickable(
-                     onClick = { onClickItem(item) },
-                     onLongClick = { onLongClickItem(item) },
-                  )
-                  .padding(5.dp),
-            ) {
-               Text("id: ${item.id}")
-               Text(
-                  text = "count: ${item.count}",
-                  modifier = Modifier.align(Alignment.CenterHorizontally),
-               )
-            }
-         }
+  PullToRefreshBox(
+    isRefreshing = items.fIsRefreshing(),
+    onRefresh = { items.refresh() },
+    modifier = modifier.fillMaxSize(),
+  ) {
+    LazyColumn(
+      modifier = Modifier.fillMaxSize(),
+      contentPadding = PaddingValues(10.dp),
+      verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+      fPagingItems(
+        items = items,
+        key = items.itemKey { it.id },
+        contentType = items.itemContentType(),
+      ) { _, item ->
+        Column(
+          modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .animateItem()
+            .combinedClickable(
+              onClick = { onClickItem(item) },
+              onLongClick = { onLongClickItem(item) },
+            )
+            .padding(5.dp),
+        ) {
+          Text("id: ${item.id}")
+          Text(
+            text = "count: ${item.count}",
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+          )
+        }
       }
-   }
+    }
+  }
 }
 
 private class ModifyModelPagingSource : FIntPagingSource<ModifyModel>() {
-   override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<ModifyModel> {
-      delay(500)
-      return if (key == initialKey) {
-         List(5) { index ->
-            ModifyModel(
-               id = (index + 1).toString(),
-               count = 0,
-            )
-         }
-      } else emptyList()
-   }
+  override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<ModifyModel> {
+    delay(500)
+    return if (key == initialKey) {
+      List(5) { index ->
+        ModifyModel(
+          id = (index + 1).toString(),
+          count = 0,
+        )
+      }
+    } else emptyList()
+  }
 }
 
 private data class ModifyModel(
-   val id: String,
-   val count: Int,
+  val id: String,
+  val count: Int,
 )

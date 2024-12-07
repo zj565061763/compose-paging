@@ -26,49 +26,49 @@ import java.io.IOException
 
 class SampleStateError : ComponentActivity() {
 
-   private val _flow = fPagerFlow { ErrorPagingSource() }
-      .cachedIn(lifecycleScope)
+  private val _flow = fPagerFlow { ErrorPagingSource() }
+    .cachedIn(lifecycleScope)
 
-   override fun onCreate(savedInstanceState: Bundle?) {
-      super.onCreate(savedInstanceState)
-      setContent {
-         AppTheme {
-            val items = _flow.collectAsLazyPagingItems()
-            Content(items = items)
-         }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContent {
+      AppTheme {
+        val items = _flow.collectAsLazyPagingItems()
+        Content(items = items)
       }
-   }
+    }
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Content(
-   modifier: Modifier = Modifier,
-   items: LazyPagingItems<UserModel>,
+  modifier: Modifier = Modifier,
+  items: LazyPagingItems<UserModel>,
 ) {
-   PullToRefreshBox(
-      isRefreshing = items.fIsRefreshing(),
-      onRefresh = { items.refresh() },
-      modifier = modifier.fillMaxSize(),
-      contentAlignment = Alignment.Center,
-   ) {
-      LazyColumn(modifier = modifier.fillMaxSize()) {
-         fPagingItems(items) { _, item ->
-            Text(item.toString())
-         }
+  PullToRefreshBox(
+    isRefreshing = items.fIsRefreshing(),
+    onRefresh = { items.refresh() },
+    modifier = modifier.fillMaxSize(),
+    contentAlignment = Alignment.Center,
+  ) {
+    LazyColumn(modifier = modifier.fillMaxSize()) {
+      fPagingItems(items) { _, item ->
+        Text(item.toString())
       }
+    }
 
-      items.FUIStateRefresh(
-         stateError = {
-            Text("加载失败:$it")
-         },
-      )
-   }
+    items.FUIStateRefresh(
+      stateError = {
+        Text("加载失败:$it")
+      },
+    )
+  }
 }
 
 private class ErrorPagingSource : FIntPagingSource<UserModel>() {
-   override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<UserModel> {
-      delay(1_000)
-      throw IOException("load error")
-   }
+  override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<UserModel> {
+    delay(1_000)
+    throw IOException("load error")
+  }
 }

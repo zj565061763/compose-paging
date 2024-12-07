@@ -26,30 +26,30 @@ import androidx.paging.compose.LazyPagingItems
  */
 @Composable
 fun FPagingAppend(
-   items: LazyPagingItems<*>,
-   modifier: Modifier = Modifier,
-   stateLoading: @Composable () -> Unit = { StateLoading() },
-   stateError: @Composable (Throwable) -> Unit = {
-      StateError(
-         items = items,
-         text = stringResource(R.string.lib_compose_paging_state_append_load_failure),
-      )
-   },
-   stateNoMoreData: @Composable () -> Unit = {
-      Text(
-         text = stringResource(R.string.lib_compose_paging_state_append_no_more_data),
-         fontSize = 12.sp,
-         color = MaterialTheme.colorScheme.onSurface.copy(0.5f),
-      )
-   },
+  items: LazyPagingItems<*>,
+  modifier: Modifier = Modifier,
+  stateLoading: @Composable () -> Unit = { StateLoading() },
+  stateError: @Composable (Throwable) -> Unit = {
+    StateError(
+      items = items,
+      text = stringResource(R.string.lib_compose_paging_state_append_load_failure),
+    )
+  },
+  stateNoMoreData: @Composable () -> Unit = {
+    Text(
+      text = stringResource(R.string.lib_compose_paging_state_append_no_more_data),
+      fontSize = 12.sp,
+      color = MaterialTheme.colorScheme.onSurface.copy(0.5f),
+    )
+  },
 ) {
-   StateBox(modifier = modifier) {
-      items.FUIStateAppend(
-         stateLoading = stateLoading,
-         stateError = stateError,
-         stateNoMoreData = stateNoMoreData,
-      )
-   }
+  StateBox(modifier = modifier) {
+    items.FUIStateAppend(
+      stateLoading = stateLoading,
+      stateError = stateError,
+      stateNoMoreData = stateNoMoreData,
+    )
+  }
 }
 
 /**
@@ -57,64 +57,64 @@ fun FPagingAppend(
  */
 @Composable
 fun FPagingPrepend(
-   items: LazyPagingItems<*>,
-   modifier: Modifier = Modifier,
-   stateLoading: @Composable () -> Unit = { StateLoading() },
-   stateError: @Composable (Throwable) -> Unit = {
-      StateError(
-         items = items,
-         text = stringResource(R.string.lib_compose_paging_state_prepend_load_failure)
-      )
-   },
+  items: LazyPagingItems<*>,
+  modifier: Modifier = Modifier,
+  stateLoading: @Composable () -> Unit = { StateLoading() },
+  stateError: @Composable (Throwable) -> Unit = {
+    StateError(
+      items = items,
+      text = stringResource(R.string.lib_compose_paging_state_prepend_load_failure)
+    )
+  },
 ) {
-   StateBox(modifier = modifier) {
-      items.FUIStatePrepend(
-         stateLoading = stateLoading,
-         stateError = stateError,
-      )
-   }
+  StateBox(modifier = modifier) {
+    items.FUIStatePrepend(
+      stateLoading = stateLoading,
+      stateError = stateError,
+    )
+  }
 }
 
 @Composable
 private fun StateBox(
-   modifier: Modifier = Modifier,
-   content: @Composable BoxScope.() -> Unit,
+  modifier: Modifier = Modifier,
+  content: @Composable BoxScope.() -> Unit,
 ) {
-   Box(
-      modifier = modifier
-         .fillMaxWidth()
-         .heightIn(48.dp)
-         .padding(5.dp),
-      contentAlignment = Alignment.Center,
-      content = content,
-   )
+  Box(
+    modifier = modifier
+      .fillMaxWidth()
+      .heightIn(48.dp)
+      .padding(5.dp),
+    contentAlignment = Alignment.Center,
+    content = content,
+  )
 }
 
 @Composable
 private fun StateLoading(
-   modifier: Modifier = Modifier,
+  modifier: Modifier = Modifier,
 ) {
-   CircularProgressIndicator(
-      modifier = modifier.size(24.dp),
-      strokeWidth = 2.dp,
-      color = MaterialTheme.colorScheme.onSurface
-   )
+  CircularProgressIndicator(
+    modifier = modifier.size(24.dp),
+    strokeWidth = 2.dp,
+    color = MaterialTheme.colorScheme.onSurface
+  )
 }
 
 @Composable
 private fun StateError(
-   modifier: Modifier = Modifier,
-   items: LazyPagingItems<*>,
-   text: String,
+  modifier: Modifier = Modifier,
+  items: LazyPagingItems<*>,
+  text: String,
 ) {
-   Text(
-      text = text,
-      fontSize = 12.sp,
-      color = MaterialTheme.colorScheme.onSurface.copy(0.5f),
-      textAlign = TextAlign.Center,
-      modifier = modifier
-         .clickable { items.retry() }
-         .defaultMinSize(60.dp, 30.dp)
-         .padding(horizontal = 10.dp)
-   )
+  Text(
+    text = text,
+    fontSize = 12.sp,
+    color = MaterialTheme.colorScheme.onSurface.copy(0.5f),
+    textAlign = TextAlign.Center,
+    modifier = modifier
+      .clickable { items.retry() }
+      .defaultMinSize(60.dp, 30.dp)
+      .padding(horizontal = 10.dp)
+  )
 }

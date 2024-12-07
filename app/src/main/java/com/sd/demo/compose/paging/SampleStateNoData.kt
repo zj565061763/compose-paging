@@ -25,49 +25,49 @@ import kotlinx.coroutines.delay
 
 class SampleStateNoData : ComponentActivity() {
 
-   private val _flow = fPagerFlow { NoDataPagingSource() }
-      .cachedIn(lifecycleScope)
+  private val _flow = fPagerFlow { NoDataPagingSource() }
+    .cachedIn(lifecycleScope)
 
-   override fun onCreate(savedInstanceState: Bundle?) {
-      super.onCreate(savedInstanceState)
-      setContent {
-         AppTheme {
-            val items = _flow.collectAsLazyPagingItems()
-            Content(items = items)
-         }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContent {
+      AppTheme {
+        val items = _flow.collectAsLazyPagingItems()
+        Content(items = items)
       }
-   }
+    }
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Content(
-   modifier: Modifier = Modifier,
-   items: LazyPagingItems<UserModel>,
+  modifier: Modifier = Modifier,
+  items: LazyPagingItems<UserModel>,
 ) {
-   PullToRefreshBox(
-      isRefreshing = items.fIsRefreshing(),
-      onRefresh = { items.refresh() },
-      modifier = modifier.fillMaxSize(),
-      contentAlignment = Alignment.Center,
-   ) {
-      LazyColumn(modifier = modifier.fillMaxSize()) {
-         fPagingItems(items) { _, item ->
-            Text(item.toString())
-         }
+  PullToRefreshBox(
+    isRefreshing = items.fIsRefreshing(),
+    onRefresh = { items.refresh() },
+    modifier = modifier.fillMaxSize(),
+    contentAlignment = Alignment.Center,
+  ) {
+    LazyColumn(modifier = modifier.fillMaxSize()) {
+      fPagingItems(items) { _, item ->
+        Text(item.toString())
       }
+    }
 
-      items.FUIStateRefresh(
-         stateNoData = {
-            Text("暂无数据")
-         }
-      )
-   }
+    items.FUIStateRefresh(
+      stateNoData = {
+        Text("暂无数据")
+      }
+    )
+  }
 }
 
 private class NoDataPagingSource : FIntPagingSource<UserModel>() {
-   override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<UserModel> {
-      delay(1_000)
-      return emptyList()
-   }
+  override suspend fun loadImpl(params: LoadParams<Int>, key: Int): List<UserModel> {
+    delay(1_000)
+    return emptyList()
+  }
 }
