@@ -41,7 +41,6 @@ android {
 }
 
 dependencies {
-  implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
   api(libs.androidx.paging.runtime)
   api(libs.androidx.paging.compose)
@@ -53,7 +52,6 @@ publishing {
       groupId = libGroupId
       artifactId = libArtifactId
       version = libVersion
-
       afterEvaluate {
         from(components["release"])
       }
