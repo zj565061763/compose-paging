@@ -62,8 +62,7 @@ class FPagingDataModifier<T : Any> internal constructor(
 
   private fun Flow<PagingData<T>>.modify(): Flow<PagingData<T>> {
     return combine(_stateFlow) { data, state ->
-      data
-        .let { state.remove.transform(it, getID) }
+      data.let { state.remove.transform(it, getID) }
         .let { state.update.transform(it, getID) }
     }
   }
